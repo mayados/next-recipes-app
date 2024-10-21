@@ -1,0 +1,7 @@
+model Category {
+   id String @id @default(auto()) @map("_id") @db.ObjectId 
+  title String @unique
+  slug  String @unique
+
+  recipes Recipe[]
+}

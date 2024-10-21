@@ -1,0 +1,15 @@
+model Article {
+    // Ce qui sert d'identifiant
+   id String @id @default(auto()) @map("_id") @db.ObjectId 
+   title String
+   text String
+    // Le slug est unique 
+   slug String @unique
+
+    // Par défaut on met la date actuelle
+   createdAt DateTime @default(now())
+
+   comments Comment[]
+
+   tags TagArticle[]
+}

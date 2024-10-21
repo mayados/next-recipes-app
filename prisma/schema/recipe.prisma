@@ -1,0 +1,17 @@
+model Recipe {
+    id String @id @default(auto()) @map("_id") @db.ObjectId 
+  title           String
+  timePreparation Int
+  instructions    String
+  picture         String
+  createdAt       DateTime @default(now())
+  slug            String @unique
+
+    // One recipe is linked to one Category
+      categoryId String @db.ObjectId
+    category Category @relation(fields: [categoryId], references: [id])
+
+    composition Composition[]
+
+    @@index([categoryId])
+}

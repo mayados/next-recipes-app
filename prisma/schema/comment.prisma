@@ -1,0 +1,14 @@
+model Comment {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    text String
+
+    articleId String @db.ObjectId
+    // Un commentaire appartient à un Article
+    article Article @relation(fields: [articleId], references: [id])
+
+    userId String
+
+    createdAt DateTime @default(now())
+
+    @@index([articleId])
+}
