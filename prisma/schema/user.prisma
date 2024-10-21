@@ -2,4 +2,10 @@ model User {
    id String @id @default(auto()) @map("_id") @db.ObjectId 
   pseudo String @unique
   mail   String @unique
+  role String @default("ROLE_USER")
+
+    favorites Favorite[]
+    recipes Recipe[]
+    articles Article[]
+    comments Comment[]
 }

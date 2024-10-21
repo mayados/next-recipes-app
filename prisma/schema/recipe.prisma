@@ -11,7 +11,16 @@ model Recipe {
       categoryId String @db.ObjectId
     category Category @relation(fields: [categoryId], references: [id])
 
-    composition Composition[]
+    // One recipe is linked to one User
+    userId String @db.ObjectId
+    user User @relation(fields: [userId], references: [id])
+
+    compositions Composition[]
+    favorites Favorite[]
+    steps Step[]
+    recipetools RecipeTool[]
+
 
     @@index([categoryId])
+    @@index([userId])
 }

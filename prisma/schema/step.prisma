@@ -2,4 +2,11 @@ model Step {
    id String @id @default(auto()) @map("_id") @db.ObjectId 
   number Int
   text   String
+
+    // One step is linked to one recipe
+    recipeId String @db.ObjectId
+    recipe Recipe @relation(fields: [recipeId], references: [id])
+
+    @@index([recipeId])
+
 }

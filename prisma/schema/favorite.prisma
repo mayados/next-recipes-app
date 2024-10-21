@@ -1,4 +1,12 @@
 model Favorite {
    id String @id @default(auto()) @map("_id") @db.ObjectId 
+    
+    userId String @db.ObjectId
+    user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
+    recipeId String @db.ObjectId
+    recipe Recipe @relation(fields: [recipeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@index([recipeId])
+    @@index([userId])
 }

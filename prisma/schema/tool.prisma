@@ -3,4 +3,7 @@ model Tool {
   label   String @unique
   picture String
   slug    String @unique
+
+  recipeTools RecipeTool[]
+
 }
