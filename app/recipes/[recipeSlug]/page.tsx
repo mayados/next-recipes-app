@@ -83,6 +83,12 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                     <Button label="Ingredients" icon={Gauge} />
                     <Button label="Tools" icon={Gauge} />
                 </div>
+                {
+                //     recipe.composition.ingredient.label.map((ingredients) => (
+
+                // ))                      
+                }
+ 
             </div>
         </section>
         {/* Comments about the recipe */}
