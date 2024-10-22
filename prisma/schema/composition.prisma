@@ -1,6 +1,9 @@
 model Composition {
     id String @id @default(auto()) @map("_id") @db.ObjectId
 
+    unit String
+    quantity Int
+
     recipeId String @db.ObjectId
     recipe Recipe @relation(fields: [recipeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
