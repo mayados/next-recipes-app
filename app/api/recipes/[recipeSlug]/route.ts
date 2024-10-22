@@ -12,7 +12,11 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
                 slug: recipeSlug
             },
             include: {
-                compositions:true,
+                compositions: {
+                    include: {
+                        ingredient: true,
+                    }
+                },
                 steps: true,
                 category: true,
                 recipetools: true,
