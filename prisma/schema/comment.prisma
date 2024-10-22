@@ -10,8 +10,13 @@ model Comment {
     userId String @db.ObjectId
     user User @relation(fields: [userId], references: [id])
 
+   // One comment is linked to one Recipe
+    recipeId String @db.ObjectId
+    recipe Recipe @relation(fields: [recipeId], references: [id])
+
     createdAt DateTime @default(now())
 
     @@index([articleId])
     @@index([userId])
+    @@index([recipeId])
 }
