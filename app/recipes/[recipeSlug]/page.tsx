@@ -16,6 +16,7 @@ import { CookingPot } from 'lucide-react';
 import { GitFork } from 'lucide-react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { MessageSquareQuote } from 'lucide-react';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -23,6 +24,7 @@ import 'swiper/css/pagination';
 import '../../swiper.css';
 // import required modules
 import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
+import Comment from "@/components/Comment";
 
 
 const Recipe = ({params}: {params: {recipeSlug: string}}) => {
@@ -32,6 +34,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [recipetools, setTools] = useState<RecipeToolType[]>([]);
     const [compositions, setIngredients] = useState<CompositionType[]>([]);
     const [steps, setSteps] = useState<StepType[]>([]);
+    const [comment, setComments] = useState<CommentType[]>([]);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -44,12 +47,27 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             setIngredients(data.compositions)
             setTools(data.recipetools)
             setSteps(data.steps)
+            setComments(data.comment)
 
         }
         // We call the function
         fetchRecipe()
         // useEffect re-called if the recipeSlug changes
     }, [params.recipeSlug])
+
+    const deleteComment = async (commentId: string) => {
+        try {
+            const response = await fetch(`/api/recipes/${recipe?.slug}/comments/${commentId}`, {
+                method: "DELETE",
+            });
+            if (response.ok) {
+                // Si l'appel à l'API fonctionne, on supprime le commentaire localement
+                setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+            }
+        } catch (error) {
+            console.error("Erreur lors de la suppression du commentaire :", error);
+        }
+    }
 
   return (
 
@@ -182,8 +200,17 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
 
         </section>
         {/* Comments about the recipe */}
-        <section>
-
+        <section className="mt-10">
+            <Title label={`Comments (${comment.length})`} icon={MessageSquareQuote} />
+            {comment.map((comment) => (
+                <>
+                    <Comment key={comment.id} comment={comment} action={() => deleteComment(comment.id)}  />
+                </>
+            ))}
+        </section>
+        {/* Adding comment section */}
+        <section className="mt-10">
+            <Title label="Add a comment" icon={MessageSquareQuote} />
         </section>
     </div>
 
