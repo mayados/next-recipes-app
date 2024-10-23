@@ -24,7 +24,7 @@ const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, act
   const backgroundColor = findBackgroundColor(specifyBackground);
 
   return (
-        <button onClick={action} className={`flex f px-5 py-2 mt-1 ${backgroundColor} from-white hover:bg-pink-500 cursor-pointer rounded-lg`}>
+        <button onClick={action} className={`flex items-center px-3 py-1 mt-1 ${backgroundColor} from-white hover:bg-pink-500 cursor-pointer rounded-lg`}>
             <Icon className="mx-2" /> 
             {label} 
         </button>
