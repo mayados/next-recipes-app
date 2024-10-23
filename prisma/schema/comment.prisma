@@ -2,17 +2,17 @@ model Comment {
     id String @id @default(auto()) @map("_id") @db.ObjectId
     text String
 
-    articleId String @db.ObjectId
+    articleId String? @db.ObjectId
     // Un commentaire appartient à un Article
-    article Article @relation(fields: [articleId], references: [id])
+    article Article? @relation(fields: [articleId], references: [id])
 
    // One comment is linked to one User
     userId String @db.ObjectId
     user User @relation(fields: [userId], references: [id])
 
    // One comment is linked to one Recipe
-    recipeId String @db.ObjectId
-    recipe Recipe @relation(fields: [recipeId], references: [id])
+    recipeId String? @db.ObjectId
+    recipe Recipe? @relation(fields: [recipeId], references: [id])
 
     createdAt DateTime @default(now())
 
