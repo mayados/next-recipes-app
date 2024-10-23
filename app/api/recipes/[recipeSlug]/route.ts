@@ -25,6 +25,9 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
                     }
                 },
                 comment: {
+                    include: {
+                        user: true,
+                    },
                     orderBy: {
                         createdAt: 'desc'
                     }
