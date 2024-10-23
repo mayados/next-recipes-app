@@ -2,6 +2,14 @@ interface CommentType{
     id: string;
     text: string;
     createdAt: Date;
+    user: UserType;
+}
+
+interface UserType{
+    id: string;
+    pseudo: string;
+    mail: string;
+    role: string;
 }
 
 interface StepType{
@@ -57,6 +65,6 @@ interface RecipeType{
     compositions: CompositionType[];
     steps: StepType[];
     recipetools: RecipeToolType[];
-    // comments: CommentType[];
+    comment: CommentType[];
 }
 
