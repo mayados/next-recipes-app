@@ -18,17 +18,30 @@ interface CategoryType{
 
 
 interface CompositionType{
-    idIngredient : string;
-    idRecipe: string;
+    ingredient : IngredientType;
+    recipe: RecipeType;
     unit: string;
     quantity: number;
+    tool: ToolType;
+}
+
+interface ToolType{
+    id: string;
+    label: string;
+    composition: CompositionType;
 }
 
 interface IngredientType{
     id: String;
+    label: String;
     unit: String;
     quantity: number;
     composition: CompositionType;
+}
+
+interface RecipeToolType{
+    recipe: RecipeType;
+    tool: ToolType;
 }
 
 interface RecipeType{
@@ -43,7 +56,7 @@ interface RecipeType{
     slug: string
     compositions: CompositionType[];
     steps: StepType[];
-    // recipetools RecipeToolType[];
+    recipetools: RecipeToolType[];
     // comments: CommentType[];
 }
 
