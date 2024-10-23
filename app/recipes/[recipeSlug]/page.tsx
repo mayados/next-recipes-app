@@ -6,12 +6,23 @@ import { Clock9, Key } from 'lucide-react';
 import { Gauge } from 'lucide-react';
 import CategoryTag from "@/components/CategoryTag";
 import Button from "@/components/Button";
+import Step from "@/components/Step";
 import { Download } from 'lucide-react';
 import { Heart } from 'lucide-react';
 import {CldImage} from "next-cloudinary";
 import Title from "@/components/Title";
 import { ListChecks } from 'lucide-react';
 import { CookingPot } from 'lucide-react';
+import { GitFork } from 'lucide-react';
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import '../../swiper.css';
+// import required modules
+import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 
 
 const Recipe = ({params}: {params: {recipeSlug: string}}) => {
@@ -20,53 +31,25 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [recipe, setRecipe] = useState<RecipeType | null>(null)
     const [recipetools, setTools] = useState<RecipeToolType[]>([]);
     const [compositions, setIngredients] = useState<CompositionType[]>([]);
+    const [steps, setSteps] = useState<StepType[]>([]);
 
     useEffect(() => {
         const fetchRecipe = async () => {
-            // Ici on utilise les back quotes ``, et non les quotes normales, car on récupère quelque chose de dynamique
+            // Back quotes because dynamical parameter
             const response = await fetch(`/api/recipes/${params.recipeSlug}`)
             const data: RecipeType = await response.json()
-            // On hydrate la recette avec les données récupérées
+            // Hydrating the recipe with retrieved datas
             setRecipe(data)
-            // setTools(data.recipetools);
+            // We set ingredients and tools
             setIngredients(data.compositions)
+            setTools(data.recipetools)
+            setSteps(data.steps)
 
         }
-        // On appelle la fonction
+        // We call the function
         fetchRecipe()
-        // Le useEffect va être redéclenché si l'articleId change
+        // useEffect re-called if the recipeSlug changes
     }, [params.recipeSlug])
-
-    // We create a function to display the tools of the recipe on the event click on the right button
-    // Undisplay the ingredients
-    const displayTools = async (recipeId: string) => {
-        try {
-            const response = await fetch(`/api/recipes/${recipe?.id}/tools`, {
-                method: "GET",
-            });
-            if (response.ok) {
-                setTools(recipetools)
-                // Si l'appel à l'API fonctionne, on undisplay la composition (=les ingrédients) localement
-                setIngredients([]);
-            }
-        } catch (error) {
-            console.error("Erreur lors de la récupération des outils :", error);
-        }
-      }
-
-    const displayIngredients = async (recipeId: string) => {
-        try {
-            const response = await fetch(`/api/recipes/${recipe?.id}/ingredients`, {
-                method: "GET",
-            });
-            if (response.ok) {
-                // Si l'appel à l'API fonctionne, on undisplay la recipetools (=les outils) localement
-                setTools([]);
-            }
-        } catch (error) {
-            console.error("Erreur lors de la récupération des outils :", error);
-        }
-      }
 
   return (
 
@@ -115,54 +98,88 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             {/* Ingredients and tools */}
             <div className="flex-1">
                 <Title label="Ingredients and Tools" icon={CookingPot} />
-                {/* Tabs buttons to choose to display ingredients or tools */}
-                <div className="bg-gray-600 p-2 flex gap-3 rounded-md">
-                    <Button key={recipe?.id} label="Ingredients" icon={Gauge} specifyBackground="" />
-                    <Button key={recipe?.slug} label="Tools" icon={Gauge} specifyBackground="none" action={() => displayTools(`${recipe?.id}`)} />
-                </div>
-                <section className="flex flex-wrap gap-3 border-2 border-gray-600 rounded-md">
-                    {
-                        compositions.map((composition) => (
-                            <div key={composition.ingredient.id} className="mt-4 flex flex-col items-center text-center w-2/12">
-                                <CldImage
-                                    className="rounded-md"
-                                    alt=""
-                                    src="cld-sample-5"
-                                    width="100"
-                                    height="100"
-                                    crop={{
-                                        type: 'auto',
-                                        source: true
-                                    }}
-                                />                           
-                                <p>{composition.ingredient.label}</p>                            
-                            </div>
-    
-                    ))                      
-                    }                    
-                    {
-                        recipetools.map((tools) => (
-                            <div className="mt-4 flex flex-col items-center text-center w-2/12">
-                                <CldImage
-                                    className="rounded-md"
-                                    alt=""
-                                    src="cld-sample-5"
-                                    width="100"
-                                    height="100"
-                                    crop={{
-                                        type: 'auto',
-                                        source: true
-                                    }}
-                                />                           
-                                <p>{tools.tool.label}</p>                            
-                            </div>
-    
-                    ))                      
-                    }                    
-                </section>
-
- 
+                {/* Tabs to choose to display ingredients or tools */}
+                <TabGroup className="rounded-md border-2 border-gray-600">
+                    <TabList className="bg-gray-600 p-2 flex gap-3">
+                        <Tab className="flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
+                            <Gauge /> Ingrédients
+                        </Tab>
+                        <Tab className="flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
+                            <Gauge /> Tools
+                        </Tab>
+                    </TabList>
+                    <TabPanels>
+                        {/* Content of Tab1 => Ingredients */}
+                        <TabPanel className="flex flex-wrap gap-3">
+                        {
+                            compositions.map((composition) => (
+                                <div key={composition.ingredient.id} className="mt-4 flex flex-col items-center text-center w-2/12">
+                                    <CldImage
+                                        className="rounded-md"
+                                        alt=""
+                                        src="cld-sample-5"
+                                        width="100"
+                                        height="100"
+                                        crop={{
+                                            type: 'auto',
+                                            source: true
+                                        }}
+                                    />                           
+                                    <p>{composition.ingredient.label}</p>                            
+                                </div>
+        
+                        ))                      
+                        }   
+                        </TabPanel>
+                        {/* Content of Tab2 => Tools */}
+                        <TabPanel className="flex flex-wrap gap-3">
+                            {
+                            recipetools.map((tools) => (
+                                <div className="mt-4 flex flex-col items-center text-center w-2/12">
+                                    <CldImage
+                                        className="rounded-md"
+                                        alt=""
+                                        src="cld-sample-5"
+                                        width="100"
+                                        height="100"
+                                        crop={{
+                                            type: 'auto',
+                                            source: true
+                                        }}
+                                    />                           
+                                    <p>{tools.tool.label}</p>                            
+                                </div>
+        
+                            ))                      
+                            }  
+                        </TabPanel>
+                    </TabPanels>
+                </TabGroup>
             </div>
+        </section>
+        {/* Steps of the recipe => with a swiper and steps count on the title */}
+        <section>
+            <Title label={`Steps (${steps.length})`} icon={GitFork} />
+            <Swiper
+                slidesPerView={2}
+                spaceBetween={30}
+                cssMode={true}
+                navigation={true}
+                pagination={true}
+                mousewheel={true}
+                keyboard={true}
+                modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+                className="mySwiper"
+            >
+                {
+                steps.map((step) => (
+                    <SwiperSlide>
+                        <Step text={step.text} number={step.number} />
+                    </SwiperSlide>
+                    ))                      
+                }  
+            </Swiper>
+
         </section>
         {/* Comments about the recipe */}
         <section>
