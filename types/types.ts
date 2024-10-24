@@ -26,6 +26,7 @@ interface CategoryType{
 
 
 interface CompositionType{
+    id: string;
     ingredient : IngredientType;
     recipe: RecipeType;
     unit: string;
