@@ -44,3 +44,38 @@
 .swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal{
     left: -25%;
 }
+
+/***********  STYLE FOR swiperLatest = Home page ***************/
+
+.swiperLatest .swiper {
+  width: 100%;
+  height: 90vh;
+}
+
+.swiperLatest .swiper-slide {
+  height: 70vh;
+  text-align: center;
+  font-size: 18px;
+  background: none;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiperLatest .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.swiperLatest .swiper-pagination-bullet{
+  display: none;
+}
+
+/* custom style for pagination bullets group */
+.swiperLatest .swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal{
+  left: 0;
+}
