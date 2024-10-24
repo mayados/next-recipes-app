@@ -2,6 +2,7 @@ model Ingredient {
    id String @id @default(auto()) @map("_id") @db.ObjectId 
   label String @unique
   slug  String @unique
+  picture String
 
     composition Composition[]
 }
