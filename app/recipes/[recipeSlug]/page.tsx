@@ -31,6 +31,7 @@ import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 import Comment from "@/components/Comment";
 import { json } from "stream/consumers";
 import Link from "next/link";
+import DownloadPdf from "@/components/DownloadPdf";
 
 
 const Recipe = ({params}: {params: {recipeSlug: string}}) => {
@@ -43,7 +44,11 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [comment, setComments] = useState<CommentType[]>([]);
     const [newComment, setNewComment] = useState({text: ""})
     const [suggestions, setSuggestions] = useState<RecipeType | null>(null)
+    // To manage recipes put in favorite (in localstorage for now)
+    const [favoriteRecipe, setFavoriteRecipe] = useState<RecipeType | null>(null);
 
+
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -65,6 +70,23 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         // useEffect re-called if the recipeSlug changes
     }, [params.recipeSlug])
 
+    const saveToLocalStorage = async (recipe:RecipeType) => {
+        localStorage.setItem("favoriteRecipe", JSON.stringify(recipe))
+        setFavoriteRecipe(recipe);
+        console.log(localStorage.getItem("favoriteRecipe"))
+    }
+
+    // To retrieve favorite recipes, we have to retrieve the value using json parse, to get something we can read
+    const getFromLocalStorage = (): RecipeType | null => {
+        const storedRecipe = localStorage.getItem("favoriteRecipe");
+        if (storedRecipe) {
+            return JSON.parse(storedRecipe);
+  
+
+        }
+        return null;
+    };
+
     const deleteComment = async (commentId: string) => {
         try {
             const response = await fetch(`/api/recipes/${recipe?.slug}/comments/${commentId}`, {
@@ -81,43 +103,41 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
 
     const handleCommentInputChange = (e: React.ChangeEvent) => {
         setNewComment({ text: e.target.value });
-      };
+    };
 
-        const addComment = async (e : FormEvent) => {
-            // We don't want the form to refresh the page when submitted
-            e.preventDefault()
-            try{
+    const addComment = async (e : FormEvent) => {
+        // We don't want the form to refresh the page when submitted
+        e.preventDefault()
+        try{
 
-                const response = await fetch(`/api/comments`, {
-                    method: "POST",
-                    // We use JSON.stringify to assign key => value in json string
-                    body: JSON.stringify({text: newComment.text,
-                        userId: "6718be46cbfe3064f8998c23",
-                        recipeId: "671750047bbc414450065a73",
-                        createdAt: new Date().toISOString() 
-                    })
-                });
-                if (response.ok) {
-                    const commentAdded = await response.json();
-                    setComments(prevComments => [commentAdded['comment'],...prevComments, ]); 
-                    setNewComment({text: ""});                        
-                }
-
-            }catch(error){
-                console.error("Erreur lors de l'ajout du commentaire :", error);
-
+            const response = await fetch(`/api/comments`, {
+                method: "POST",
+                // We use JSON.stringify to assign key => value in json string
+                body: JSON.stringify({text: newComment.text,
+                    userId: "6718be46cbfe3064f8998c23",
+                    recipeId: "671750047bbc414450065a73",
+                    createdAt: new Date().toISOString() 
+                })
+            });
+            if (response.ok) {
+                const commentAdded = await response.json();
+                setComments(prevComments => [commentAdded['comment'],...prevComments, ]); 
+                setNewComment({text: ""});                        
             }
 
+        }catch(error){
+            console.error("Erreur lors de l'ajout du commentaire :", error);
         }
+
+    }
             
 
   return (
-
     
     <div className="p-5">
-        <section className="lg:w-screen lg:flex h-[50vh] bg-gray-800 mt-5">
+        <section className="lg:w-screen flex flex-col lg:flex-row h-[50vh] bg-gray-800 mt-5">
             {/* Basic informations */}
-            <div className="lg:flex-1 flex flex-col items-center justify-center h-full">
+            <div className="lg:flex-1 flex flex-col h-[50vh] items-center justify-center lg:h-full">
                 <h1 className="text-center mb-3 text-4xl">{recipe?.title}</h1>
                 <div className="flex justify-center mb-3 gap-2">
                     <CategoryTag categoryName={recipe?.category.title} />
@@ -131,60 +151,53 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                     </ul>
                 </div>
                 <div className="flex gap-2 justify-center">
-                    <Button icon={Download} label="Download" specifyBackground="" />
-                    <Button icon={Heart} label="Favorite" specifyBackground="" />
+                    <DownloadPdf icon={Download} label="Download" objectReference={recipe} filename={recipe?.slug} />
+                    <Button icon={Heart} label="Favorite" specifyBackground="" action={() => saveToLocalStorage(recipe)} />
                 </div>
             </div>
             <div className="lg:flex-1">
-                <CldImage
-                    alt=""
-                    src="cld-sample-5"
-                    width="250"
-                    height="300"
-                    crop={{
-                        type: 'auto',
-                        source: true
-                    }}
+                <Image
+                    className="h-[100%] w-[100%] object-cover"
+                    src={`https://res.cloudinary.com/${cloudName}/${recipe?.picture}`}
+                    width={500}
+                    height={500}
+                    alt="Picture of the recipe"
                 />
             </div>
         </section>
         {/* Main instructions about the recipe */}
-        <section className="mt-10 flex">
+        <section className=" mt-10 flex flex-col flex-wrap lg:flex-row">
             {/* Instructions */}
-            <div className="flex-1">
+            <div className="lg:flex-1">
                 <Title label="Instructions" icon={ListChecks} />
                 <p>{recipe?.instructions}</p>
             </div>
             {/* Ingredients and tools */}
-            <div className="flex-1">
+            <div className="lg:flex-1 mt-10">
                 <Title label="Ingredients and Tools" icon={CookingPot} />
                 {/* Tabs to choose to display ingredients or tools */}
                 <TabGroup className="rounded-md border-2 border-gray-600">
                     <TabList className="bg-gray-600 p-2 flex gap-3">
-                        <Tab className="flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
+                        <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
                             <Gauge /> Ingrédients
                         </Tab>
-                        <Tab className="flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
+                        <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
                             <Gauge /> Tools
                         </Tab>
                     </TabList>
                     <TabPanels>
                         {/* Content of Tab1 => Ingredients */}
-                        <TabPanel className="flex flex-wrap gap-3">
+                        <TabPanel className="flex flex-wrap gap-3 px-2">
                         {
                             compositions.map((composition) => (
                                 <div key={composition.id} className="mt-4 flex flex-col items-center text-center w-2/12">
-                                    <CldImage
-                                        className="rounded-md"
-                                        alt=""
-                                        src="cld-sample-5"
-                                        width="100"
-                                        height="100"
-                                        crop={{
-                                            type: 'auto',
-                                            source: true
-                                        }}
-                                    />                           
+                                    <Image
+                                        className="h-[100%] w-[100%] object-cover"
+                                        src={`https://res.cloudinary.com/${cloudName}/${composition.ingredient.picture}`}
+                                        width={500}
+                                        height={500}
+                                        alt="Picture of the ingredient"
+                                    />                        
                                     <p>{composition.ingredient.label}</p>                            
                                 </div>
         
@@ -192,21 +205,17 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                         }   
                         </TabPanel>
                         {/* Content of Tab2 => Tools */}
-                        <TabPanel className="flex flex-wrap gap-3">
+                        <TabPanel className="flex flex-wrap gap-3 px-2">
                             {
                             recipetools.map((tools) => (
                                 <div className="mt-4 flex flex-col items-center text-center w-2/12">
-                                    <CldImage
-                                        className="rounded-md"
-                                        alt=""
-                                        src="cld-sample-5"
-                                        width="100"
-                                        height="100"
-                                        crop={{
-                                            type: 'auto',
-                                            source: true
-                                        }}
-                                    />                           
+                                    <Image
+                                        className="h-[100%] w-[100%] object-cover"
+                                        src={`https://res.cloudinary.com/${cloudName}/${tools.tool.picture}`}
+                                        width={500}
+                                        height={500}
+                                        alt="Picture of the ingredient"
+                                    />                          
                                     <p>{tools.tool.label}</p>                            
                                 </div>
         
@@ -218,7 +227,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             </div>
         </section>
         {/* Steps of the recipe => with a swiper and steps count on the title */}
-        <section>
+        <section className="mt-10">
             <Title label={`Steps (${steps.length})`} icon={GitFork} />
             <Swiper
                 slidesPerView={2}
@@ -261,20 +270,17 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             <div className="flex justify-start gap-5 mt-5">
                 {
                     suggestions?.map((suggestion) => (
-                        <article className='w-[200px] group border-slate-700 border-2 rounded-md'>
+                        <article key={suggestion.id} className='w-[200px] group border-slate-700 border-2 rounded-md'>
                             <div>
-                                <CldImage
-                                    alt=""
-                                    src="cld-sample-5"
-                                    width="200"
-                                    height="170"
-                                    crop={{
-                                        type: 'auto',
-                                        source: true
-                                    }}
-                                    />
+                                <Image
+                                    className="h-[100%] w-[100%] object-cover"
+                                    src={`https://res.cloudinary.com/${cloudName}/${suggestion.picture}`}
+                                    width={500}
+                                    height={500}
+                                    alt="Picture of the ingredient"
+                                />     
                             </div>
-                            <div className='p-3 flex flex-col items-center'>
+                            <div className='p-3 flex flex-col items-center text-center'>
                                 <h2 className='text-xl font-bold'>{suggestion?.title}</h2>
                                 <Link className="flex flex-row rounded-md p-1 hover:bg-gray-600 cursor-pointer my-3" href={`/recipes/${recipe?.slug}`}>
                                     View recipe <ArrowRight  />
@@ -284,7 +290,6 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                     ))                      
                 }                  
             </div>
-
         </section>
     </div>
 
