@@ -8,6 +8,7 @@ interface ButtonProps {
   icon: LucideIcon;
   specifyBackground: string;
   action?: () => void; 
+  type?:  "submit" | "reset" | "button" | undefined;
 }
 
 const findBackgroundColor =  (specifyBackground)  => {
@@ -19,12 +20,12 @@ const findBackgroundColor =  (specifyBackground)  => {
 
 }
 
-const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, action}) => {
+const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, action, type}) => {
 
   const backgroundColor = findBackgroundColor(specifyBackground);
 
   return (
-        <button onClick={action} className={`flex items-center px-3 py-1 mt-1 ${backgroundColor} from-white hover:bg-pink-500 cursor-pointer rounded-lg`}>
+        <button onClick={action} type={type} className={`flex items-center px-3 py-1 mt-1 ${backgroundColor} from-white hover:bg-pink-500 cursor-pointer rounded-lg`}>
             <Icon className="mx-2" /> 
             {label} 
         </button>
