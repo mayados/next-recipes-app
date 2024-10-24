@@ -3,6 +3,14 @@
 import RecipeCard from "@/components/RecipeCard";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import './swiper.css';
+// import required modules
+import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 
 export default function Home() {
 
@@ -22,14 +30,25 @@ export default function Home() {
 
   return (
     <>
-        <h1 className="text-3xl text-white">Latest Recipes</h1>
-        
-        <div className="flex gap-5 justify-around px-3">
+        <h1 className="text-3xl text-white text-center">Latest Recipes</h1>
+        <Swiper
+                slidesPerView={3}
+                spaceBetween={30}
+                cssMode={true}
+                navigation={true}
+                pagination={true}
+                mousewheel={true}
+                keyboard={true}
+                modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+                className="swiperLatest mt-10"
+            >        
           {
             recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} />         
-            ))}          
-        </div>
+              <SwiperSlide>
+                <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} />         
+            </SwiperSlide>
+           ))}          
+        </Swiper>
     </>
   )
 }
