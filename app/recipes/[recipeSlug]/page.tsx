@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { Clock9, Key } from 'lucide-react';
 import { Gauge } from 'lucide-react';
 import CategoryTag from "@/components/CategoryTag";
+import CommentForm from "@/components/CommentForm";
 import Button from "@/components/Button";
 import Step from "@/components/Step";
 import { Download } from 'lucide-react';
@@ -14,7 +15,8 @@ import Title from "@/components/Title";
 import { ListChecks } from 'lucide-react';
 import { CookingPot } from 'lucide-react';
 import { GitFork } from 'lucide-react';
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import { SendHorizontal } from 'lucide-react';
+import { Field, Label, Tab, TabGroup, TabList, TabPanel, TabPanels, Textarea } from '@headlessui/react'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { MessageSquareQuote } from 'lucide-react';
 // Import Swiper styles
@@ -25,6 +27,7 @@ import '../../swiper.css';
 // import required modules
 import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 import Comment from "@/components/Comment";
+import { json } from "stream/consumers";
 
 
 const Recipe = ({params}: {params: {recipeSlug: string}}) => {
@@ -35,6 +38,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [compositions, setIngredients] = useState<CompositionType[]>([]);
     const [steps, setSteps] = useState<StepType[]>([]);
     const [comment, setComments] = useState<CommentType[]>([]);
+    const [newComment, setNewComment] = useState({text: ""})
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -69,6 +73,38 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         }
     }
 
+    const handleCommentInputChange = (e: React.ChangeEvent) => {
+        setNewComment({ text: e.target.value });
+      };
+
+        const addComment = async (e : FormEvent) => {
+            // We don't want the form to refresh the page when submitted
+            e.preventDefault()
+            try{
+
+                const response = await fetch(`/api/comments`, {
+                    method: "POST",
+                    // We use JSON.stringify to assign key => value in json string
+                    body: JSON.stringify({text: newComment.text,
+                        userId: "6718be46cbfe3064f8998c23",
+                        recipeId: "671750047bbc414450065a73",
+                        createdAt: new Date().toISOString() 
+                    })
+                });
+                if (response.ok) {
+                    const commentAdded = await response.json();
+                    setComments(prevComments => [commentAdded['comment'],...prevComments, ]); 
+                    setNewComment({text: ""});                        
+                }
+
+            }catch(error){
+                console.error("Erreur lors de l'ajout du commentaire :", error);
+
+            }
+
+        }
+            
+
   return (
 
     
@@ -89,8 +125,8 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                     </ul>
                 </div>
                 <div className="flex gap-2 justify-center">
-                    <Button icon={Download} label="Download" />
-                    <Button icon={Heart} label="Favorite" />
+                    <Button icon={Download} label="Download" specifyBackground="" />
+                    <Button icon={Heart} label="Favorite" specifyBackground="" />
                 </div>
             </div>
             <div className="lg:flex-1">
@@ -131,7 +167,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                         <TabPanel className="flex flex-wrap gap-3">
                         {
                             compositions.map((composition) => (
-                                <div key={composition.ingredient.id} className="mt-4 flex flex-col items-center text-center w-2/12">
+                                <div key={composition.id} className="mt-4 flex flex-col items-center text-center w-2/12">
                                     <CldImage
                                         className="rounded-md"
                                         alt=""
@@ -209,8 +245,9 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             ))}
         </section>
         {/* Adding comment section */}
-        <section className="mt-10">
+        <section className="mt-10 w-full">
             <Title label="Add a comment" icon={MessageSquareQuote} />
+            <CommentForm name="text" placeholder="Write your comment here..." action={addComment} type="submit" value={newComment.text} onChange={handleCommentInputChange}  />
         </section>
     </div>
 
