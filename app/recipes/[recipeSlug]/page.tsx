@@ -15,6 +15,8 @@ import Title from "@/components/Title";
 import { ListChecks } from 'lucide-react';
 import { CookingPot } from 'lucide-react';
 import { GitFork } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { SendHorizontal } from 'lucide-react';
 import { Field, Label, Tab, TabGroup, TabList, TabPanel, TabPanels, Textarea } from '@headlessui/react'
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -28,6 +30,7 @@ import '../../swiper.css';
 import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 import Comment from "@/components/Comment";
 import { json } from "stream/consumers";
+import Link from "next/link";
 
 
 const Recipe = ({params}: {params: {recipeSlug: string}}) => {
@@ -39,6 +42,8 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [steps, setSteps] = useState<StepType[]>([]);
     const [comment, setComments] = useState<CommentType[]>([]);
     const [newComment, setNewComment] = useState({text: ""})
+    const [suggestions, setSuggestions] = useState<RecipeType | null>(null)
+
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -46,12 +51,13 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             const response = await fetch(`/api/recipes/${params.recipeSlug}`)
             const data: RecipeType = await response.json()
             // Hydrating the recipe with retrieved datas
-            setRecipe(data)
+            setRecipe(data['recipe'])
             // We set ingredients and tools
-            setIngredients(data.compositions)
-            setTools(data.recipetools)
-            setSteps(data.steps)
-            setComments(data.comment)
+            setIngredients(data['recipe'].compositions)
+            setTools(data['recipe'].recipetools)
+            setSteps(data['recipe'].steps)
+            setComments(data['recipe'].comment)
+            setSuggestions(data['suggestions'])
 
         }
         // We call the function
@@ -248,6 +254,37 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         <section className="mt-10 w-full">
             <Title label="Add a comment" icon={MessageSquareQuote} />
             <CommentForm name="text" placeholder="Write your comment here..." action={addComment} type="submit" value={newComment.text} onChange={handleCommentInputChange}  />
+        </section>
+        {/* Suggestions */}
+        <section className="mt-5">
+            <Title label="Suggestions" icon={Lightbulb} />
+            <div className="flex justify-start gap-5 mt-5">
+                {
+                    suggestions?.map((suggestion) => (
+                        <article className='w-[200px] group border-slate-700 border-2 rounded-md'>
+                            <div>
+                                <CldImage
+                                    alt=""
+                                    src="cld-sample-5"
+                                    width="200"
+                                    height="170"
+                                    crop={{
+                                        type: 'auto',
+                                        source: true
+                                    }}
+                                    />
+                            </div>
+                            <div className='p-3 flex flex-col items-center'>
+                                <h2 className='text-xl font-bold'>{suggestion?.title}</h2>
+                                <Link className="flex flex-row rounded-md p-1 hover:bg-gray-600 cursor-pointer my-3" href={`/recipes/${recipe?.slug}`}>
+                                    View recipe <ArrowRight  />
+                                </Link>
+                            </div>   
+                        </article>                     
+                    ))                      
+                }                  
+            </div>
+
         </section>
     </div>
 
