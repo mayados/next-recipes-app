@@ -10,13 +10,15 @@ interface NavProps{
 
 
 const Nav:React.FC<NavProps> = ({ logo, menu }) => {
+
+
   return (
     <nav className=' bg-slate-800 flex px-3 text-white h-[8vh] items-center justify-between'>
         <p>{logo}</p>
         <ul className='flex text-white gap-3'>
             {
                 menu.map((element) => (
-                 <li>{element}</li>                    
+                 <li><a href={`/${element.toLowerCase()}`}>{element}</a></li>                    
                 ))
             }
         </ul>
