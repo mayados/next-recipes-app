@@ -89,7 +89,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
 
     const deleteComment = async (commentId: string) => {
         try {
-            const response = await fetch(`/api/recipes/${recipe?.slug}/comments/${commentId}`, {
+            const response = await fetch(`api/comments/delete/${commentId}`, {
                 method: "DELETE",
             });
             if (response.ok) {
@@ -110,7 +110,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         e.preventDefault()
         try{
 
-            const response = await fetch(`/api/comments`, {
+            const response = await fetch(`/api/comments/comentsRecipe`, {
                 method: "POST",
                 // We use JSON.stringify to assign key => value in json string
                 body: JSON.stringify({text: newComment.text,
@@ -255,7 +255,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             <Title label={`Comments (${comment.length})`} icon={MessageSquareQuote} />
             {comment.map((comment) => (
                 <>
-                    <Comment key={comment.id} comment={comment} action={() => deleteComment(comment.id)}  />
+                    <Comment key={comment.id} comment={comment} action={() => deleteComment(comment.id)} borderColor="border-slate-200" borderSize="border-2" />
                 </>
             ))}
         </section>
