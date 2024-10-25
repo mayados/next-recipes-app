@@ -3,6 +3,7 @@ model User {
   pseudo String @unique
   mail   String @unique
   role String @default("ROLE_USER")
+  picture String
 
     favorites Favorite[]
     recipes Recipe[]
