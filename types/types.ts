@@ -10,6 +10,7 @@ interface UserType{
     pseudo: string;
     mail: string;
     role: string;
+    picture: string,
 }
 
 interface StepType{
@@ -78,9 +79,9 @@ interface ArticleWithTagsAndComments{
     text: string;
     slug: string;
     createdAt: Date;
-    // Ici on iindique bien que c'est un tableau, car c'est un ensemble de tags
     tags: TagArticleType[];
     comments: CommentType[];
+    user: UserType;
 }
 
 interface TagArticleType{
