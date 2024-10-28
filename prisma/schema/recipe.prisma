@@ -6,10 +6,13 @@ model Recipe {
   picture         String
   createdAt       DateTime @default(now())
   slug            String @unique
+  isHealthy       Boolean
+  IsVegan         Boolean
+  difficulty      Int
 
     // One recipe is linked to one Category
-      categoryId String @db.ObjectId
-    category Category @relation(fields: [categoryId], references: [id])
+    categoryId String? @db.ObjectId
+    category Category? @relation(fields: [categoryId], references: [id])
 
     // One recipe is linked to one User
     userId String @db.ObjectId
