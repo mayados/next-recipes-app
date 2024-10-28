@@ -63,6 +63,9 @@ interface RecipeType{
     timePreparation: number;
     instructions:    String
     picture:         String
+    difficulty: number;
+    isHealthy: boolean;
+    IsVegan: boolean;
     createdAt: Date;
     categoryId: string;
     category: CategoryType;
