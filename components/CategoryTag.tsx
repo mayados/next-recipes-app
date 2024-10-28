@@ -23,7 +23,7 @@ const CategoryTag: React.FC<CategoryTagProps> = ({ categoryName }) => {
   const color = getColorCategoryTagClass(categoryName);
 
   return (
-    <div className={`text-center w-[15] ${color}`}>
+    <div className={`py-1 px-2 inline-block ${color} rounded-md mb-3`}>
       <p>{categoryName}</p>
     </div>
   );
