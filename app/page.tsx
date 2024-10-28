@@ -27,6 +27,7 @@ export default function Home() {
 
     fetchRecipes()
   })
+ 
 
   return (
     <>
@@ -45,7 +46,7 @@ export default function Home() {
           {
             recipes.map((recipe) => (
               <SwiperSlide>
-                <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} />         
+                <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} difficultyLevel={recipe.difficulty} isHealthy={recipe.isHealthy} IsVegan={recipe.IsVegan} />         
             </SwiperSlide>
            ))}          
         </Swiper>
