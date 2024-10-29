@@ -1,12 +1,17 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from 'next/server'
 
+// We precise which road is form the admin
+const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 
-// export default clerkMiddleware();
-
-// Declaring public and private routes
-export default clerkMiddleware({
-  publicRoutes: ["/"]
-});
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, sessionClaims, redirectToSignIn } = await auth()
+  // Protect all routes starting with `/admin`
+    if (isAdminRoute(req) && sessionClaims?.metadata?.role !== 'admin') {
+        const url = new URL('/', req.url)
+        return NextResponse.redirect(url)
+    }
+})
 
 export const config = {
   matcher: [
