@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from '@/components/Nav'
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,14 +32,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className="bg-slate-900 text-white">
-        <Nav logo="MyRecipes" menu={["Recipes","Search","Blog"]} />
-        <main>
-          {children}
-        </main>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className="bg-slate-900 text-white">
+          <Nav logo="MyRecipes" menu={["Recipes","Search","Blog","Profile","User"]} />
+          <main>
+            {children}
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
