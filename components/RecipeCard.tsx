@@ -24,8 +24,8 @@ interface RecipeCardProps{
     if((isHealthy && IsVegan)){
       return(
         <div className='absolute flex bg-gray-300 top-3 right-3 p-1 rounded-md'>
-          <Leaf className='text-green-800' />       
-          <HeartPulse className='text-pink-500' />           
+          <Leaf fill='green' className='text-black' />       
+          <HeartPulse fill='red' className='text-black' />           
         </div>
             
       );
@@ -33,13 +33,13 @@ interface RecipeCardProps{
     }else if(isHealthy){
       return(
         <div className='absolute bg-gray-300 top-3 right-3 rounded-md p-1'>
-        <Leaf className='text-green-800' />       
+        <Leaf fill='green' className='text-black' />       
       </div>
       );
     }else{
       return(
       <div className='absolute bg-gray-300 top-3 right-3 rounded-md p-1'>   
-        <HeartPulse className='text-pink-500' />           
+        <HeartPulse fill='pink' className='text-black' />           
       </div>
       );
       return null;
