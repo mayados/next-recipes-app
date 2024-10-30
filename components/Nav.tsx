@@ -3,7 +3,6 @@
 import React from 'react'
 import Image from "next/image";
 import {
-  ClerkProvider,
   SignInButton,
   SignedIn,
   SignedOut,
@@ -11,6 +10,7 @@ import {
   useSession
 } from '@clerk/nextjs'
 import { checkUserRole } from '../lib/utils';
+import DarkModeToggle from './DarkModeToggle';
 
 
 interface NavProps{
@@ -34,16 +34,12 @@ const Nav:React.FC<NavProps> = ({ logo}) => {
 
   return (
     <nav className=' bg-slate-800 flex px-3 text-white h-[8vh] items-center justify-between'>
-        <p>{logo}</p>
+        <a href='/'>{logo}</a>
         <ul className='flex text-white gap-3'>
-            {/* {
-                menu.map((element) => (
-                 <li><a href={`/${element.url}`}>{element.title}</a></li>                    
-                ))
-            } */}
             <SignedOut>
               <li><a href={`/recipes`}>Recipes</a></li>                    
               <li><a href={`/search`}>Search</a></li>                    
+              <li><a href={`/blog`}>Blog</a></li>                    
             <SignInButton />
           </SignedOut>
           <SignedIn>
@@ -54,7 +50,8 @@ const Nav:React.FC<NavProps> = ({ logo}) => {
                 ) : null
               )}
             <UserButton />
-          </SignedIn>               
+          </SignedIn>      
+          <DarkModeToggle />         
         </ul>
     </nav>
   )
