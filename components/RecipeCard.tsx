@@ -39,7 +39,7 @@ interface RecipeCardProps{
     }else{
       return(
       <div className='absolute bg-gray-300 top-3 right-3 rounded-md p-1'>   
-        <HeartPulse fill='pink' className='text-black' />           
+        <HeartPulse fill='red' className='text-black' />           
       </div>
       );
       return null;
