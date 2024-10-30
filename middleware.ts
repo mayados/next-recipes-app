@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 
 // We precise which road is form the admin
 const isAdminRoute = createRouteMatcher(['/admin(.*)'])
+// const isForConnectedUsers = createRouteMatcher(['/blog/(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth()
@@ -11,6 +12,12 @@ export default clerkMiddleware(async (auth, req) => {
         const url = new URL('/', req.url)
         return NextResponse.redirect(url)
     }
+
+    // Protect all routes starting with /blog for unconnected users
+    // if(isForConnectedUsers(req) && (await auth()).userId === null){
+    //   const url = new URL('/', req.url)
+    //   return NextResponse.redirect(url)
+    // }
 })
 
 export const config = {
