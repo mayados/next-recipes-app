@@ -41,7 +41,7 @@ export default function Home() {
                 mousewheel={true}
                 keyboard={true}
                 modules={[Navigation, Pagination, Mousewheel, Keyboard]}
-                className="swiperLatest mt-10"
+                className="swiperLatest md:mt-10"
             >        
           {
             recipes.map((recipe) => (
