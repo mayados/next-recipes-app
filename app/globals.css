@@ -25,3 +25,19 @@ body {
     text-wrap: balance;
   }
 } */
+
+
+body.light-mode {
+  background: #fff;
+  color: #000000;
+  transition: background-color 0.3s ease;
+}
+
+body.light-mode h1{
+  color: #000000;
+}
+
+body.dark-mode {
+  background: #0f172a;
+  color: white;
+}
