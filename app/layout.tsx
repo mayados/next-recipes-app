@@ -10,6 +10,9 @@ import {
   UserButton
 } from '@clerk/nextjs'
 
+
+
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -34,12 +37,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className="bg-slate-900 text-white">
-          <Nav logo="MyRecipes" menu={["Recipes","Search","Blog","Profile","User"]} />
+        <body>
+          <Nav logo="MyRecipes" />
           <main>
             {children}
-          </main>
+          </main>        
         </body>
       </html>
     </ClerkProvider>
