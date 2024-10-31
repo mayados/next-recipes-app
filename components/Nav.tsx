@@ -22,7 +22,7 @@ const menu = [
   {title: "Recipes", url: '/recipes'},
   {title: "Search", url: '/search'},
   {title: "Blog", url: '/blog'},
-  {title: "Profile", url: '/profile'},
+  // {title: "Profile", url: '/profile'},
   {title: "Admin", url: '/admin', role: 'admin'},
 ];
 
