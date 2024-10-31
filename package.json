@@ -29,6 +29,7 @@
     "prisma": "^5.21.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
     "react-switch": "^7.0.0",
     "swiper": "^11.1.14",
     "use-dark-mode": "^2.3.1"
