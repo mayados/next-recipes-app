@@ -1,9 +1,11 @@
 "use client";
 
 import RecipeCard from "@/components/RecipeCard";
+import LinkButton from "@/components/LinkButton";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import { BadgePlus } from 'lucide-react';
 
 
 export default function Recipes() {
@@ -32,7 +34,9 @@ export default function Recipes() {
   return (
 
     <>
-        <h1 className="text-3xl text-white ml-3">Recipes</h1>
+      <h1 className="text-3xl text-white ml-3">Recipes</h1>
+
+      <LinkButton label="Create a recipe" icon={BadgePlus} path="/recipes/create" dynamicPath=""   />
         
       <TabGroup className="ml-3 my-3">
         <TabList className="ml-3 my-3 flex gap-3">
