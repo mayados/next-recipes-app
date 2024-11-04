@@ -1,22 +1,50 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-
 // Asynchrone : waits for a promise
 export async function POST(req: NextRequest)
 {
 
     // specific method to retrieve body (with NextRequest)
     const data = await req.json();  
-    const { title, instructions, preparationTime, isHealthy, isVegan, picture, userId, createdAt, difficulty, slug, categoryId, user } = data;
+    const { title, instructions, preparationTime, isHealthy, isVegan, picture, createdAt, difficulty, slug, categoryId, user, ingredients,  clerkUserId, email, pseudo, selectedCategory } = data;
     try{
-        console.log("données reçues api : "+data);
+        // console.log("données reçues api : "+data);
+        // console.log("le user id est : "+clerkUserId)
+
+        // We search if the user already exists in the database (beacause we use Clerk to manage users, but we have a local table User in the database)
+        let dbUser = await db.user.findUnique({
+            where: { 
+                clerkUserId: clerkUserId,
+            },
+          });
+      
+        //   If the user doesn't exist in the database, we create him (because the authentication is made with clerk ,and we have to be sure to link a user of the database to the current user)
+          if (!dbUser) {
+            dbUser = await db.user.create({
+              data: {
+                clerkUserId: clerkUserId,
+                mail: email,
+                pseudo: pseudo,
+                picture: "",
+              },
+            });
+          }
+
+          const category = await db.category.findUnique({
+            where: { 
+                title: selectedCategory,
+            },
+          });
+
+          const categoryId = category?.id
 
         // Retrieve the comment to delete
         const recipe = await db.recipe.create({
             data: {
                 title: String(title),
-                userId: "6718be46cbfe3064f8998c23",
+                // the user we found or the user we just created
+                userId: dbUser.id,
                 instructions: String(instructions),
                 createdAt: createdAt,
                 timePreparation: parseInt(preparationTime),
@@ -25,9 +53,47 @@ export async function POST(req: NextRequest)
                 picture: String(picture),
                 difficulty: parseInt(difficulty),
                 slug: String(slug),
-                categoryId: "671752197bbc414450065a78",
+                categoryId: categoryId,
             }
         })
+
+
+        // create query to post ingredients
+        // Each function is async, so we have to put await
+        const ingredientPromises = ingredients.map(async (ingredient) => {
+            // We have to verify if the ingredient exists. We don't want to stock it multiple times in the database
+            let existingIngredient = await db.ingredient.findUnique({
+                where: { 
+                    label: ingredient.name
+                 }
+            });
+
+            if (!existingIngredient) {
+                existingIngredient = await db.ingredient.create({
+                    data: {
+                        label: String(ingredient.name),
+                        slug: ingredient.slug,
+                        picture: ingredient.picture || "pictureIngredient",
+                    }
+                });
+            }
+
+            // Create query to post composition of the recipe
+            await db.composition.create({
+                data: {
+                    unit: String(ingredient.unity),
+                    quantity: parseInt(ingredient.quantity),
+                    recipeId: recipe.id,
+                    ingredientId: existingIngredient.id, 
+                }
+            });
+
+        // create query to post Steps
+
+
+        });
+
+        await Promise.all(ingredientPromises);
 
         
         return NextResponse.json({
