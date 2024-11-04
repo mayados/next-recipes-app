@@ -1,20 +1,22 @@
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
-import { Field, Textarea, Label, Legend, Radio, RadioGroup, Fieldset, Input  } from '@headlessui/react';
+import { Field, Textarea, Label, Legend, Radio, RadioGroup, Fieldset, Input, Select  } from '@headlessui/react';
 import Button from "@/components/Button";
 import { SendHorizontal } from 'lucide-react';
-import { useAuth } from '@clerk/nextjs';
 import toast, { Toaster } from 'react-hot-toast';
 import { slugify } from '@/lib/utils'
 import { useRouter } from "next/navigation";
+import { CircleX } from 'lucide-react';
+import { CirclePlus } from 'lucide-react';
+import { useUser } from "@clerk/nextjs";
 
 
 export default function CreateRecipe() {
 
-    // Get the current user informations from Clerk
-    // const {userId} = useAuth();
-
+    const { user } = useUser();
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
     const isHealthyChoices = ["Yes","No"];
     const isVeganChoices = ["Yes","No"];
     const difficultyChoices = ["1","2","3","4","5"];
@@ -22,9 +24,33 @@ export default function CreateRecipe() {
     const [selectedVeganChoice, setSelectedVeganChoice] = useState(isVeganChoices[0])
     const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyChoices[0])
     // Because we have plenty of values to retrieve from the creation form : 
-    const [formValues, setFormValues] = useState()
+    const [formValues, setFormValues] = useState({
+        title: "",
+        preparationTime: "",
+        instructions: "",
+        isHealthy: "",
+        isVegan: "",
+        difficulty: "",
+        ingredients: [] 
+    })
     // Hook to redirect
     const router = useRouter();
+
+    // Retrieve the categories 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories'); 
+                const data = await response.json();
+                console.log(data)
+                setCategories(data);
+            } catch (error) {
+                console.error("Error during the retrieving of the categories :", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     // Retrieve datas from the inputs
     const handleInputChange = (
@@ -46,44 +72,93 @@ export default function CreateRecipe() {
         }));
       };
 
+    // Retrieve data from the form for ingredients
+    const handleIngredientChange = (index, event) => {
+        const { name,slug, value } = event.target;
+        const newIngredients = [...formValues.ingredients];
+        newIngredients[index] = {
+            ...newIngredients[index],
+            [name]: value,
+            [slug]: slugify(value)
+        };
+        setFormValues({
+            ...formValues,
+            ingredients: newIngredients,
+        });
+        // console.log(formValues)
+    };
+
+    // Add an ingredient
+    const addIngredient = () => {
+        setFormValues({
+            ...formValues,
+            ingredients: [...formValues.ingredients, { name: "", quantity: "", unity: "", slug: "" }],
+        });
+    };
+
+    // remove an ingredient
+    const removeIngredient = (index) => {
+        const newIngredients = formValues.ingredients.filter((_, i) => i !== index);
+        setFormValues({
+            ...formValues,
+            ingredients: newIngredients,
+        });
+    };
+
     // Create the recipe thanks to the API
       const addRecipe = async (e : FormEvent) => {
         // We don't want the form to refresh the page when submitted
         e.preventDefault()
-        try{
 
-            const slug = slugify(formValues.title)
-                const response = await fetch(`/api/recipes/create`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    // We use JSON.stringify to assign key => value in json string
-                    body: JSON.stringify({
-                        title: formValues.title,
-                        preparationTime: formValues.preparationTime,
-                        instructions: formValues.instructions,
-                        isHealthy: formValues.isHealthy,
-                        isVegan: formValues.isVegan,
-                        difficulty: formValues.difficulty,
-                        picture: "picturerecipe",
-                        userId: "6718be46cbfe3064f8998c23",
-                        slug: slug,
-                        createdAt: new Date().toISOString() ,
-                    })
-                });
-                if (response.ok) {
-                    toast.success('Recipe created with success')
-                    const dataResponse = await response.json();
-                    console.log(dataResponse.recipeSlug)
-                    // Method for the client to redirect
-                    router.push(`/recipes/${dataResponse.recipeSlug}`)
-                }
-       
-        }catch(error){
-            console.log("erreur")
-            toast.error("There was a problem with creating your recipe. Please try again !")
-        }
+        if(user){
+            try{
+                console.log("La catégorie sélectionnée est :"+selectedCategory)
+                // We retrieve the current user's data because we need it in the api method
+                const { id, primaryEmailAddress, username } = user;
+                const ingredients = formValues.ingredients
+                ingredients.forEach(async (ingredient) => {
+                    ingredient["slug"] = slugify(ingredient.name);
+                    ingredient["name"] = ingredient.name.toLowerCase();
+                });      
+                const slug = slugify(formValues.title)
+                    const response = await fetch(`/api/recipes/create`, {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/json'
+                        },
+                        // We use JSON.stringify to assign key => value in json string
+                        body: JSON.stringify({
+                            title: formValues.title,
+                            preparationTime: formValues.preparationTime,
+                            instructions: formValues.instructions,
+                            isHealthy: formValues.isHealthy,
+                            isVegan: formValues.isVegan,
+                            difficulty: formValues.difficulty,
+                            picture: "picturerecipe",
+                            slug: slug,
+                            createdAt: new Date().toISOString() ,
+                            ingredients: formValues.ingredients,
+                            email: primaryEmailAddress?.emailAddress,
+                            pseudo: username,
+                            clerkUserId: id,
+                            category: selectedCategory,
+                        })
+                    });
+                    if (response.ok) {
+                        toast.success('Recipe created with success')
+                        const dataResponse = await response.json();
+                        console.log(dataResponse.recipeSlug)
+                        // Method for the client to redirect
+                        router.push(`/recipes/${dataResponse.recipeSlug}`)
+                    }
+        
+            }catch(error){
+                console.log("erreur")
+                toast.error("There was a problem with creating your recipe. Please try again !")
+            }                
+        } 
+
+
 
     }
 
@@ -158,6 +233,20 @@ export default function CreateRecipe() {
                     ))}
                 </RadioGroup>
             </Fieldset>
+            <div>
+                <label htmlFor="category">Recipe's category</label>
+                <Select
+                    id="category"
+                    value={selectedCategory}
+                    onChange={setSelectedCategory} // Met à jour l'état lors de la sélection
+                    className="w-full rounded-md bg-gray-700 text-white pl-3"
+                >
+                <option value="" disabled>Select a category</option>
+                    {categories.map((category) => (
+                        <option key={category.id} value={category.title}>{category.title}</option>
+                    ))}
+                </Select>
+            </div>
             <div >
                 <label for="recipe-photo" class="block text-sm/6 font-medium text-white">Recipe's picture</label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -175,6 +264,41 @@ export default function CreateRecipe() {
                     </div>
                 </div>
             </div>
+            <h2>Ingredients</h2>
+            {formValues.ingredients.map((ingredient, index) => (
+            <div key={index}>
+                <Input
+                    type="text"
+                    name="name"
+                    placeholder="Ingredient name"
+                    value={ingredient.name}
+                    onChange={(event) => handleIngredientChange(index, event)}
+                    className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
+                />
+                <Input
+                    type="number"
+                    name="quantity"
+                    placeholder="Quantity"
+                    value={ingredient.quantity}
+                    onChange={(event) => handleIngredientChange(index, event)}
+                    className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
+                />
+                <Input
+                    type="text"
+                    name="unity"
+                    placeholder="Unity e.g : liter, slice..."
+                    value={ingredient.unity}
+                    onChange={(event) => handleIngredientChange(index, event)}
+                    className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
+                />
+                <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} className="text-red-500" />
+            </div>
+            ))}
+            <Button label="Add ingredient" icon={CirclePlus} type="button" action={() => addIngredient()} className="text-red-500" />
+            <h2>Tools</h2>
+
+            <h2>Steps</h2>
+
             <Button icon={SendHorizontal} label="Send" specifyBackground="" type="submit" />
         </form>  
 
