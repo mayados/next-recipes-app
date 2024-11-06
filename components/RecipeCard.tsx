@@ -134,7 +134,7 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
         <div className='relative'>
           <CldImage
                 alt=""
-                src="cld-sample-5"
+                src={recipe.picture}
                 width="250"
                 height="250"
                 crop={{

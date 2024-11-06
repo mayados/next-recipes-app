@@ -158,7 +158,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             <div className="lg:flex-1">
                 <Image
                     className="h-[100%] w-[100%] object-cover"
-                    src={`https://res.cloudinary.com/${cloudName}/${recipe?.picture}`}
+                    src={recipe?.picture}
                     width={500}
                     height={500}
                     alt="Picture of the recipe"
