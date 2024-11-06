@@ -7,10 +7,9 @@ export async function POST(req: NextRequest)
 
     // specific method to retrieve body (with NextRequest)
     const data = await req.json();  
-    const { title, instructions, preparationTime, isHealthy, isVegan, picture, createdAt, difficulty, slug, categoryId, user, ingredients,  clerkUserId, email, pseudo, selectedCategory } = data;
+    const { title, instructions, preparationTime, isHealthy, isVegan, picture, createdAt, difficulty, slug, categoryTitle, ingredients,  clerkUserId, email, pseudo, steps, tools } = data;
     try{
         // console.log("données reçues api : "+data);
-        // console.log("le user id est : "+clerkUserId)
 
         // We search if the user already exists in the database (beacause we use Clerk to manage users, but we have a local table User in the database)
         let dbUser = await db.user.findUnique({
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest)
 
           const category = await db.category.findUnique({
             where: { 
-                title: selectedCategory,
+                title: categoryTitle,
             },
           });
 
@@ -57,6 +56,21 @@ export async function POST(req: NextRequest)
             }
         })
 
+        const recipeSteps = steps.map(async (step) => {
+
+            await db.step.create({
+                data: {
+                    text: String(step.text),
+                    number: parseInt(step.number),
+                    recipeId: recipe.id,
+                }
+            });
+
+        
+        await Promise.all(recipeSteps);
+
+
+        });
 
         // create query to post ingredients
         // Each function is async, so we have to put await
@@ -94,6 +108,36 @@ export async function POST(req: NextRequest)
         });
 
         await Promise.all(ingredientPromises);
+
+        const toolPromises = tools.map(async (tool) => {
+            let existingTool = await db.tool.findUnique({
+                where: { 
+                    label: tool.label
+                 }
+            });
+
+            if (!existingTool) {
+                existingTool = await db.tool.create({
+                    data: {
+                        label: String(tool.label),
+                        slug: tool.slug,
+                        picture: tool.picture || "pictureIngredient",
+                    }
+                });
+            }
+
+            await db.recipeTool.create({
+                data: {
+                    recipeId: recipe.id,
+                    toolId: existingTool.id, 
+                }
+            });
+
+
+
+        });
+
+        await Promise.all(toolPromises);
 
         
         return NextResponse.json({
