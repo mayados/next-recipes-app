@@ -48,7 +48,6 @@ export default function CreateRecipe() {
             try {
                 const response = await fetch('/api/categories'); 
                 const data = await response.json();
-                console.log(data)
                 setCategories(data);
             } catch (error) {
                 console.error("Error during the retrieving of the categories :", error);
@@ -60,6 +59,7 @@ export default function CreateRecipe() {
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
+        console.log("Le fichier visé est : "+file)
         const formData = new FormData();
         formData.append("file", file);
       
@@ -76,6 +76,7 @@ export default function CreateRecipe() {
           // Si la réponse est OK, on essaye de la parser en JSON
           if (response.ok) {
             const data = JSON.parse(responseText);
+            console.log("Les données reçues suite à l'upload du fichier sont : "+data)
             if (data.url) {
               setImageUrl(data.url);
               console.log("Image URL:", data.url);
@@ -257,7 +258,6 @@ export default function CreateRecipe() {
                     if (response.ok) {
                         toast.success('Recipe created with success')
                         const dataResponse = await response.json();
-                        console.log(dataResponse.recipeSlug)
                         // Method for the client to redirect
                         router.push(`/recipes/${dataResponse.recipeSlug}`)
                     }
