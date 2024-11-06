@@ -10,11 +10,14 @@ import { useRouter } from "next/navigation";
 import { CircleX } from 'lucide-react';
 import { CirclePlus } from 'lucide-react';
 import { useUser } from "@clerk/nextjs";
+import cloudinary from "@/lib/cloudinary"; 
 
 
 export default function CreateRecipe() {
 
     const { user } = useUser();
+    const [image, setImage] = useState(null);
+    const [imageUrl, setImageUrl] = useState("");
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const isHealthyChoices = ["Yes","No"];
@@ -31,7 +34,10 @@ export default function CreateRecipe() {
         isHealthy: "",
         isVegan: "",
         difficulty: "",
-        ingredients: [] 
+        ingredients: [],
+        steps: [],
+        tools: [] 
+
     })
     // Hook to redirect
     const router = useRouter();
@@ -51,6 +57,38 @@ export default function CreateRecipe() {
 
         fetchCategories();
     }, []);
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+      
+        try {
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+      
+          console.log("Response status:", response.status); // Vérifie le statut de la réponse
+          const responseText = await response.text(); // Lis la réponse en tant que texte
+          console.log("Response text:", responseText); // Vérifie ce qui est renvoyé
+      
+          // Si la réponse est OK, on essaye de la parser en JSON
+          if (response.ok) {
+            const data = JSON.parse(responseText);
+            if (data.url) {
+              setImageUrl(data.url);
+              console.log("Image URL:", data.url);
+            } else {
+              console.error("Erreur lors de l'upload de l'image.");
+            }
+          } else {
+            console.error("Erreur lors de l'upload de l'image :", response.statusText);
+          }
+        } catch (error) {
+          console.error("Erreur lors de l'upload de l'image :", error);
+        }
+      };
 
     // Retrieve datas from the inputs
     const handleInputChange = (
@@ -72,6 +110,12 @@ export default function CreateRecipe() {
         }));
       };
 
+    const handleCategoryChange= (event) => {
+        const value = event.target.value
+        setSelectedCategory(value)
+    }
+
+    // INGREDIENTS
     // Retrieve data from the form for ingredients
     const handleIngredientChange = (index, event) => {
         const { name,slug, value } = event.target;
@@ -105,6 +149,66 @@ export default function CreateRecipe() {
         });
     };
 
+    // TOOLS
+    const handleToolChange = (index, event) => {
+        const { value } = event.target;
+        const newTools = [...formValues.tools];
+        newTools[index] = {
+            ...newTools[index],
+            label: value,
+        };
+        setFormValues({
+            ...formValues,
+            tools: newTools,
+        });
+        // console.log(formValues)
+    };
+
+    const addTool = () => {
+        setFormValues({
+            ...formValues,
+            tools: [...formValues.tools, { label: "", slug: "" }],
+        });
+    };
+
+    const removeTool = (index) => {
+        const newTools = formValues.tools.filter((_, i) => i !== index);
+        setFormValues({
+            ...formValues,
+            tools: newTools,
+        });
+    };
+
+
+    // STEPS
+    const handleStepChange = (index, event) => {
+        const { value } = event.target;
+        const newSteps = [...formValues.steps];
+        newSteps[index] = {
+            ...newSteps[index],
+            text: value,
+        };
+        setFormValues({
+            ...formValues,
+            steps: newSteps,
+        });
+    };
+
+    const addStep = () => {
+        setFormValues({
+            ...formValues,
+            steps: [...formValues.steps, { text: "", number: formValues.steps.length + 1}],
+        });
+    };
+
+    const removeStep = (index) => {
+        const newSteps = formValues.steps.filter((_, i) => i !== index).map((step, idx) => ({ ...step, number: idx + 1 }));
+        setFormValues({
+            ...formValues,
+            steps: newSteps,
+        });
+    };
+
     // Create the recipe thanks to the API
       const addRecipe = async (e : FormEvent) => {
         // We don't want the form to refresh the page when submitted
@@ -112,7 +216,6 @@ export default function CreateRecipe() {
 
         if(user){
             try{
-                console.log("La catégorie sélectionnée est :"+selectedCategory)
                 // We retrieve the current user's data because we need it in the api method
                 const { id, primaryEmailAddress, username } = user;
                 const ingredients = formValues.ingredients
@@ -120,6 +223,10 @@ export default function CreateRecipe() {
                     ingredient["slug"] = slugify(ingredient.name);
                     ingredient["name"] = ingredient.name.toLowerCase();
                 });      
+                formValues.tools.forEach(async (tool) => {
+                    tool["slug"] = slugify(tool.label);
+                    tool["label"] = tool.label.toLowerCase();
+                });    
                 const slug = slugify(formValues.title)
                     const response = await fetch(`/api/recipes/create`, {
                         method: 'POST',
@@ -134,14 +241,17 @@ export default function CreateRecipe() {
                             isHealthy: formValues.isHealthy,
                             isVegan: formValues.isVegan,
                             difficulty: formValues.difficulty,
-                            picture: "picturerecipe",
+                            picture: imageUrl,
                             slug: slug,
                             createdAt: new Date().toISOString() ,
                             ingredients: formValues.ingredients,
                             email: primaryEmailAddress?.emailAddress,
                             pseudo: username,
                             clerkUserId: id,
-                            category: selectedCategory,
+                            categoryTitle: selectedCategory,
+                            steps: formValues.steps,
+                            tools: formValues.tools
+
                         })
                     });
                     if (response.ok) {
@@ -238,7 +348,7 @@ export default function CreateRecipe() {
                 <Select
                     id="category"
                     value={selectedCategory}
-                    onChange={setSelectedCategory} // Met à jour l'état lors de la sélection
+                    onChange={handleCategoryChange} // Met à jour l'état lors de la sélection
                     className="w-full rounded-md bg-gray-700 text-white pl-3"
                 >
                 <option value="" disabled>Select a category</option>
@@ -247,23 +357,32 @@ export default function CreateRecipe() {
                     ))}
                 </Select>
             </div>
-            <div >
-                <label for="recipe-photo" class="block text-sm/6 font-medium text-white">Recipe's picture</label>
-                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="text-center">
-                    <svg className="mx-auto h-12 w-12 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
-                    </svg>
-                    <div className="mt-4 flex text-sm/6 text-gray-600 justify-center">
-                        <label for="file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold p-1 text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-black">
-                        <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only"/>
-                        </label>
-                    </div>
-                    <p className="text-xs/5 text-gray-600">PNG, JPG up to 10MB</p>
-                    </div>
-                </div>
+            <div>
+                <label htmlFor="recipe-photo">Recipe's picture</label>
+                <input
+                type="file"
+                id="recipe-photo"
+                accept="image/*"
+                onChange={handleImageUpload}
+                />
+                {imageUrl && <img src={imageUrl} alt="Aperçu de la recette" />}
+            </div> 
+            <h2>Steps</h2>
+            {formValues.steps.map((step, index) => (
+            <div key={index}>
+                <label htmlFor="">Step {step.number}</label>
+                <Input
+                    type="text"
+                    name="text"
+                    placeholder="step's text"
+                    value={step.text}
+                    onChange={(event) => handleStepChange(index, event)}
+                    className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
+                />
+                <Button label="Remove step" icon={CircleX} type="button" action={() => removeStep(index)} className="text-red-500" />
             </div>
+            ))}
+            <Button label="Add step" icon={CirclePlus} type="button" action={() => addStep()} className="text-red-500" />
             <h2>Ingredients</h2>
             {formValues.ingredients.map((ingredient, index) => (
             <div key={index}>
@@ -296,8 +415,20 @@ export default function CreateRecipe() {
             ))}
             <Button label="Add ingredient" icon={CirclePlus} type="button" action={() => addIngredient()} className="text-red-500" />
             <h2>Tools</h2>
-
-            <h2>Steps</h2>
+            {formValues.tools.map((tool, index) => (
+            <div key={index}>
+                <Input
+                    type="text"
+                    name="name"
+                    placeholder="tool name"
+                    value={tool.name}
+                    onChange={(event) => handleToolChange(index, event)}
+                    className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
+                />
+                <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} className="text-red-500" />
+            </div>
+            ))}
+            <Button label="Add tool" icon={CirclePlus} type="button" action={() => addTool()} className="text-red-500" />
 
             <Button icon={SendHorizontal} label="Send" specifyBackground="" type="submit" />
         </form>  
