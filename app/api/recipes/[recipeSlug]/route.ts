@@ -1,9 +1,12 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { getAuth } from '@clerk/nextjs/server'
 
 export async function GET(req: NextRequest, {params}: {params: {recipeSlug: string}})
 {
     const { recipeSlug } = params;
+    const { userId } = getAuth(req)
+
 
     try{
 
@@ -47,11 +50,47 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
             take: 3,
         })
 
-        // On return l'article trouvé
+                // We search if the user already exists in the database (beacause we use Clerk to manage users, but we have a local table User in the database)
+                let dbUser = await db.user.findUnique({
+                    where: { 
+                        clerkUserId: userId,
+                    },
+                  });
+              
+                //   If the user doesn't exist in the database, we create him (because the authentication is made with clerk ,and we have to be sure to link a user of the database to the current user)
+                //   if (!dbUser) {
+                //     dbUser = await db.user.create({
+                //       data: {
+                //         clerkUserId: userId,
+                //         mail: email,
+                //         pseudo: pseudo,
+                //         picture: "",
+                //       },
+                //     });
+                //   }
+
+
+        console.log("L'id de l'utilisateur"+dbUser?.id)
+        console.log("L'id de la recette"+recipe.id)
+        const favorite = await db.favorite.findFirst({
+            // Multiple conditions, because we want te recipeId and userId to match
+            where: {
+                AND: [
+                    {
+                      userId: {
+                        equals: dbUser?.id,
+                      },
+                    },
+                    { recipeId: { equals: recipe?.id } },
+                  ],
+            }
+        })
+
         return NextResponse.json({
             success: true,
             recipe: recipe,
-            suggestions: suggestions 
+            suggestions: suggestions,
+            favorite: favorite,
         });
 
     } catch (error) {
