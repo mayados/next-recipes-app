@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { Readable } from 'stream';
 
-// Configuration of cloudinary with the different env variables
+// Configuration de Cloudinary avec les variables d'environnement
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -11,21 +11,21 @@ cloudinary.config({
 
 export async function POST(request: Request) {
   try {
-    // We retrieve the datas from the form
+    // Get the file from the form
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json({ error: 'Aucun fichier reçu' }, { status: 400 });
+      return NextResponse.json({ error: 'No file received' }, { status: 400 });
     }
 
-    // We read the fil as a buffer : it's an important point in the case of file's uploading
+    // When it's a file, we have to read it as a buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // We create a readable flux from the buffer so we'll be able to transfer it to cloudinary
+    // create readable stream to transfer buffer to cloudiary
     const readableStream = Readable.from(buffer);
 
-    // Cloudinary upload
+    // Upload of the file to Cloudinary
     const uploadResponse = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { upload_preset: 'app_recipes_pictures' },
@@ -38,14 +38,15 @@ export async function POST(request: Request) {
         }
       );
 
-      // We send the flux to Cloudinary
+      // Send readable stream to cliudinary
       readableStream.pipe(uploadStream);
     });
 
+    // Return url from uploaded image
     return NextResponse.json({ url: uploadResponse.secure_url }, { status: 200 });
 
   } catch (error) {
-    console.error("Error with image's upload :", error);
+    console.error("Error with image's upload:", error);
     return NextResponse.json({ error: "Something went wrong with image's upload" }, { status: 500 });
   }
 }
