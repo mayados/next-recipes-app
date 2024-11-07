@@ -47,15 +47,14 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [comment, setComments] = useState<CommentType[]>([]);
     const [newComment, setNewComment] = useState({text: ""})
     const [suggestions, setSuggestions] = useState<RecipeType | null>(null)
-    // To manage recipes put in favorite (in localstorage for now)
-    const [favoriteRecipe, setFavoriteRecipe] = useState<RecipeType | null>(null);
-
+    // To manage the state between the recipe and user's favorites
+    const [isFavorite, setIsFavorite] = useState<FavoriteType | null>(null)
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const {user} = useUser()
-    
 
     useEffect(() => {
+        // We want to know if the recipe is part of the user's favorite recipes
         const fetchRecipe = async () => {
             // Back quotes because dynamical parameter
             const response = await fetch(`/api/recipes/${params.recipeSlug}`)
@@ -68,29 +67,145 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             setSteps(data['recipe'].steps)
             setComments(data['recipe'].comment)
             setSuggestions(data['suggestions'])
-
+            const favoriteData = data.favorite
+            if(favoriteData){
+                setIsFavorite(favoriteData)                
+            }
         }
         // We call the function
         fetchRecipe()
         // useEffect re-called if the recipeSlug changes
     }, [params.recipeSlug])
 
-    const saveToLocalStorage = async (recipe:RecipeType) => {
-        localStorage.setItem("favoriteRecipe", JSON.stringify(recipe))
-        setFavoriteRecipe(recipe);
-        console.log(localStorage.getItem("favoriteRecipe"))
+ 
+    const addRecipeToFavorites = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        if(!user) return;
+        try{
+
+            const { id, primaryEmailAddress, username } = user;
+
+            const response = await fetch(`/api/recipes/favorites`, {
+                method: "POST",
+                // We use JSON.stringify to assign key => value in json string
+                body: JSON.stringify({
+                    clerkUserId: id,
+                    userPseudo: username,
+                    email: primaryEmailAddress,
+                    recipeId: recipe?.id,
+                })
+            });
+            if (response.ok) {
+                toast.success('Recipe added to favorites');  
+                const dataResponse = await response.json();
+                const favoriteData = dataResponse.favorite
+                if(favoriteData){
+                    setIsFavorite(favoriteData)                
+                }                   
+            }
+
+        }catch(error){
+            console.error("Erreur lors de l'ajout du commentaire :", error);
+            toast.error('Something went wrong with adding to favorites. Please try again');      
+        }
+
     }
 
-    // To retrieve favorite recipes, we have to retrieve the value using json parse, to get something we can read
-    const getFromLocalStorage = (): RecipeType | null => {
-        const storedRecipe = localStorage.getItem("favoriteRecipe");
-        if (storedRecipe) {
-            return JSON.parse(storedRecipe);
-  
 
+    const removeRecipeFromFavorites = async (e: React.MouseEvent,favoriteId: string) => {
+        if(!user) return;
+        console.log(favoriteId)
+        try {
+            const response = await fetch(`/api/recipes/favorites/${favoriteId}`, {
+                method: "DELETE",
+            });
+            if (response.ok) {
+                toast.success('Favorite removed with success');      
+                // If the API's call is working, we delete the comment locally => update view           
+                setIsFavorite(null);
+            }
+        } catch (error) {
+            console.error("Error during favorite's suppression :", error);
+            toast.error('Something went wrong with removing your favorite. Please try again');      
         }
-        return null;
-    };
+    }
+
+    const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
+        switch(difficultyLevel) {
+          case 1:
+            return(
+              <>
+                <li><Gauge className='text-green-600' /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>        
+              </>
+      
+            )
+            break;
+          case 2:
+            return(
+              <>
+                <li><Gauge className='text-green-600' /></li>
+                <li><Gauge className='text-green-600' /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>        
+              </>
+      
+            )
+            break;
+          case 3:
+            return(
+              <>
+                <li><Gauge className='text-orange-600' /></li>
+                <li><Gauge className='text-orange-600' /></li>
+                <li><Gauge className='text-orange-600' /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>        
+              </>
+      
+            )
+              break;
+          case 4:
+            return(
+              <>
+                <li><Gauge className='text-orange-800' /></li>
+                <li><Gauge className='text-orange-800' /></li>
+                <li><Gauge className='text-orange-800' /></li>
+                <li><Gauge className='text-orange-800' /></li>
+                <li><Gauge /></li>        
+              </>
+      
+            )
+            break;
+          case 5:
+            return(
+              <>
+                <li><Gauge className='text-red-700' /></li>
+                <li><Gauge className='text-red-700' /></li>
+                <li><Gauge className='text-red-700' /></li>
+                <li><Gauge className='text-red-700' /></li>
+                <li><Gauge className='text-red-700' /></li>        
+              </>
+      
+            )
+            break;
+          default:
+            return(
+              <>
+                <li><Gauge /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>
+                <li><Gauge /></li>        
+              </>
+      
+            )
+        }
+      
+      }
 
     const deleteComment = async (commentId: string) => {
         try {
@@ -157,17 +272,18 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                 <div className="flex justify-center mb-3 gap-2">
                     <CategoryTag categoryName={recipe?.category.title} />
                     <Clock9 />{recipe?.timePreparation} min.
-                    <ul className='flex justify-center'>
-                        <li><Gauge /></li>
-                        <li><Gauge /></li>
-                        <li><Gauge /></li>
-                        <li><Gauge /></li>
-                        <li><Gauge /></li>
+                    <ul className="flex justify-center">
+                    {   displayDifficultyLevel(recipe?.difficulty)}                        
                     </ul>
                 </div>
                 <div className="flex gap-2 justify-center">
                     <DownloadPdf icon={Download} label="Download" objectReference={recipe} filename={recipe?.slug} />
-                    <Button icon={Heart} label="Favorite" specifyBackground="" action={() => saveToLocalStorage(recipe)} />
+                    {isFavorite ? (
+                    <Button icon={Heart} iconFill="red" label="Favorite" specifyBackground="" action={(e) => removeRecipeFromFavorites(e, isFavorite.id)} />
+
+                ) : (
+                    <Button icon={Heart} iconFill="none" label="Favorite" specifyBackground="" action={(e) => addRecipeToFavorites(e)} />
+                )}
                 </div>
             </div>
             <div className="lg:flex-1">
@@ -208,7 +324,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                                 <div key={composition.id} className="mt-4 flex flex-col items-center text-center w-2/12">
                                     <Image
                                         className="h-[100%] w-[100%] object-cover"
-                                        src={`https://res.cloudinary.com/${cloudName}/${composition.ingredient.picture}`}
+                                        src={`${composition.ingredient.picture}`}
                                         width={500}
                                         height={500}
                                         alt="Picture of the ingredient"
@@ -226,10 +342,10 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                                 <div className="mt-4 flex flex-col items-center text-center w-2/12">
                                     <Image
                                         className="h-[100%] w-[100%] object-cover"
-                                        src={`https://res.cloudinary.com/${cloudName}/${tools.tool.picture}`}
+                                        src={`${tools.tool.picture}`}
                                         width={500}
                                         height={500}
-                                        alt="Picture of the ingredient"
+                                        alt="Picture of the tool"
                                     />                          
                                     <p>{tools.tool.label}</p>                            
                                 </div>
@@ -270,7 +386,6 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             <Title label={`Comments (${comment.length})`} icon={MessageSquareQuote} />
             {comment.map((comment) => (
                 <>
-                {console.log("L'id du commentaire est : "+comment.id)}
                     <Comment key={comment.id} comment={comment} action={() => deleteComment(comment.id)} borderColor="border-slate-200" borderSize="border-2" />
                 </>
             ))}
@@ -290,7 +405,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                             <div>
                                 <Image
                                     className="h-[100%] w-[100%] object-cover"
-                                    src={`https://res.cloudinary.com/${cloudName}/${suggestion.picture}`}
+                                    src={`${suggestion.picture}`}
                                     width={500}
                                     height={500}
                                     alt="Picture of the ingredient"
