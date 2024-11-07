@@ -26,6 +26,10 @@ export default function CreateRecipe() {
     const [selectedHealthyChoice, setSelectedHealthyChoice] = useState(isHealthyChoices[0])
     const [selectedVeganChoice, setSelectedVeganChoice] = useState(isVeganChoices[0])
     const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyChoices[0])
+    // For the preview of an image, when it's uploaded
+    const [imagePreviews, setImagePreviews] = useState([]);
+    
+
     // Because we have plenty of values to retrieve from the creation form : 
     const [formValues, setFormValues] = useState({
         title: "",
@@ -34,9 +38,12 @@ export default function CreateRecipe() {
         isHealthy: "",
         isVegan: "",
         difficulty: "",
+        picture: "",
         ingredients: [],
         steps: [],
-        tools: [] 
+        tools: [],
+        // stock of selected files
+        images: [],
 
     })
     // Hook to redirect
@@ -57,39 +64,38 @@ export default function CreateRecipe() {
         fetchCategories();
     }, []);
 
-    const handleImageUpload = async (e) => {
-        const file = e.target.files[0];
-        console.log("Le fichier visé est : "+file)
-        const formData = new FormData();
-        formData.append("file", file);
-      
-        try {
-          const response = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
-      
-          console.log("Response status:", response.status); // Vérifie le statut de la réponse
-          const responseText = await response.text(); // Lis la réponse en tant que texte
-          console.log("Response text:", responseText); // Vérifie ce qui est renvoyé
-      
-          // Si la réponse est OK, on essaye de la parser en JSON
-          if (response.ok) {
-            const data = JSON.parse(responseText);
-            console.log("Les données reçues suite à l'upload du fichier sont : "+data)
-            if (data.url) {
-              setImageUrl(data.url);
-              console.log("Image URL:", data.url);
-            } else {
-              console.error("Erreur lors de l'upload de l'image.");
-            }
-          } else {
-            console.error("Erreur lors de l'upload de l'image :", response.statusText);
-          }
-        } catch (error) {
-          console.error("Erreur lors de l'upload de l'image :", error);
+    // Manage image changement => everytime we add an image in the form
+    const handleImageChange = (e, type, index = 0) => {
+        // There is only one file to get each time
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // generate temporary url for preview
+        const previewUrl = URL.createObjectURL(file);
+
+        // update to display preview
+        if (type === 'recipe') {
+            setFormValues((prevValues) => ({
+                ...prevValues,
+                picture: previewUrl,
+                images: [...prevValues.images, { file, type, index }],
+            }));
+        } else if (type === 'ingredient') {
+            setFormValues((prevValues) => {
+                const updatedIngredients = [...prevValues.ingredients];
+                updatedIngredients[index] = { ...updatedIngredients[index], picture: previewUrl };
+                return { ...prevValues, ingredients: updatedIngredients, images: [...prevValues.images, { file, type, index }] };
+            });
+        } else if (type === 'tool') {
+            setFormValues((prevValues) => {
+                const updatedTools = [...prevValues.tools];
+                updatedTools[index] = { ...updatedTools[index], picture: previewUrl };
+                return { ...prevValues, tools: updatedTools, images: [...prevValues.images, { file, type, index }] };
+            });
         }
+
       };
+
 
     // Retrieve datas from the inputs
     const handleInputChange = (
@@ -133,11 +139,12 @@ export default function CreateRecipe() {
         // console.log(formValues)
     };
 
+
     // Add an ingredient
     const addIngredient = () => {
         setFormValues({
             ...formValues,
-            ingredients: [...formValues.ingredients, { name: "", quantity: "", unity: "", slug: "" }],
+            ingredients: [...formValues.ingredients, { name: "", quantity: "", unity: "", slug: "" , picture:""}],
         });
     };
 
@@ -168,7 +175,7 @@ export default function CreateRecipe() {
     const addTool = () => {
         setFormValues({
             ...formValues,
-            tools: [...formValues.tools, { label: "", slug: "" }],
+            tools: [...formValues.tools, { label: "", slug: "", picture:"" }],
         });
     };
 
@@ -211,66 +218,118 @@ export default function CreateRecipe() {
     };
 
     // Create the recipe thanks to the API
-      const addRecipe = async (e : FormEvent) => {
-        // We don't want the form to refresh the page when submitted
-        e.preventDefault()
+    const addRecipe = async (e: FormEvent) => {
+        // avoi reload of the page when click on submit button
+        e.preventDefault(); 
+    
+        // If the user in not connected we return
+        if (!user) return; 
+    
+        try {
+            const { id, primaryEmailAddress, username } = user;
+    
+            // Slugify et put to lower case ingredients and tools
+            const ingredients = formValues.ingredients.map((ingredient) => ({
+                ...ingredient,
+                slug: slugify(ingredient.name),
+                name: ingredient.name.toLowerCase(),
+            }));
+    
+            const tools = formValues.tools.map((tool) => ({
+                ...tool,
+                slug: slugify(tool.label),
+                label: tool.label.toLowerCase(),
+            }));
+    
+            // Prepare image's upload for each tool and ingredient
+            const uploadPromises = formValues.images.map(async ({ file, type, index }) => {
+                const formData = new FormData();
+                formData.append("file", file);
+    
+                // Thanks to the API we upload every image
+                const response = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+    
+                const data = await response.json();
+                // Get the returned url
+                 return { url: data.url, type, index }; 
 
-        if(user){
-            try{
-                // We retrieve the current user's data because we need it in the api method
-                const { id, primaryEmailAddress, username } = user;
-                const ingredients = formValues.ingredients
-                ingredients.forEach(async (ingredient) => {
-                    ingredient["slug"] = slugify(ingredient.name);
-                    ingredient["name"] = ingredient.name.toLowerCase();
-                });      
-                formValues.tools.forEach(async (tool) => {
-                    tool["slug"] = slugify(tool.label);
-                    tool["label"] = tool.label.toLowerCase();
-                });    
-                const slug = slugify(formValues.title)
-                    const response = await fetch(`/api/recipes/create`, {
-                        method: 'POST',
-                        headers: {
-                        'Content-Type': 'application/json'
-                        },
-                        // We use JSON.stringify to assign key => value in json string
-                        body: JSON.stringify({
-                            title: formValues.title,
-                            preparationTime: formValues.preparationTime,
-                            instructions: formValues.instructions,
-                            isHealthy: formValues.isHealthy,
-                            isVegan: formValues.isVegan,
-                            difficulty: formValues.difficulty,
-                            picture: imageUrl,
-                            slug: slug,
-                            createdAt: new Date().toISOString() ,
-                            ingredients: formValues.ingredients,
-                            email: primaryEmailAddress?.emailAddress,
-                            pseudo: username,
-                            clerkUserId: id,
-                            categoryTitle: selectedCategory,
-                            steps: formValues.steps,
-                            tools: formValues.tools
+            });
+    
+            // We wait for all the uploads to be completed because we need each one of them to add in the database
+            const uploadResults = await Promise.all(uploadPromises);
+            console.log("Les résultats des différents uploads sont : "+uploadResults)
+    
+            // Create temporary variable to stock new urls from cloudinary (not temporary urls anymore) => We have to do this because setFormValues is asynchrone, so we have to be sure the new values are added when the form is submitted, which is not the case with setFormValues 
+            let updatedFormValues = { ...formValues };
 
-                        })
-                    });
-                    if (response.ok) {
-                        toast.success('Recipe created with success')
-                        const dataResponse = await response.json();
-                        // Method for the client to redirect
-                        router.push(`/recipes/${dataResponse.recipeSlug}`)
-                    }
-        
-            }catch(error){
-                console.log("erreur")
-                toast.error("There was a problem with creating your recipe. Please try again !")
-            }                
-        } 
+           // update urls of ingredients and tools
+            uploadResults.forEach(({ url, type, index }) => {
+                console.log(`Type: ${type}, Index: ${index}, URL: ${url}`);
+                if (type === "recipe") {
+                    console.log("L'url de la recette est : "+url)
+                    updatedFormValues.picture = url;
+                  } else if (type == "ingredient") {
+                    console.log("L'url de l'ingrédient est : "+url)
+                    console.log("je tente d'acceder à l'ingrédient: "+ingredients[index].picture)
+                    updatedFormValues.ingredients[index] = {
+                        ...updatedFormValues.ingredients[index],
+                        picture: url,
+                    };
+                  } else if (type == "tool") {
+                    console.log("L'url de l'outil est : "+url)
+                    updatedFormValues.tools[index] = {
+                        ...updatedFormValues.tools[index],
+                        picture: url,
+                    };
+                  }
+            });
+    
+            console.log('Recieved recipe picture:', formValues.picture);
+            console.log('Recieved ingredients pictures:', ingredients.map(i => i.picture));
+            console.log('Recieved tools pictures:', tools.map(t => t.picture));
 
-
-
-    }
+            // Recipe's creation
+            const slug = slugify(formValues.title);
+            const response = await fetch(`/api/recipes/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: formValues.title,
+                    preparationTime: formValues.preparationTime,
+                    instructions: formValues.instructions,
+                    isHealthy: formValues.isHealthy,
+                    isVegan: formValues.isVegan,
+                    difficulty: formValues.difficulty,
+                    picture: updatedFormValues.picture,
+                    slug: slug,
+                    createdAt: new Date().toISOString(),
+                    ingredients:  updatedFormValues.ingredients, 
+                    email: primaryEmailAddress?.emailAddress,
+                    pseudo: username,
+                    clerkUserId: id,
+                    categoryTitle: selectedCategory,
+                    steps: formValues.steps,
+                    tools:  updatedFormValues.tools,  
+                }),
+            });
+    
+            if (response.ok) {
+                toast.success('Recipe created with success');
+                const dataResponse = await response.json();
+                router.push(`/recipes/${dataResponse.recipeSlug}`);
+            } else {
+                throw new Error("Failed to create recipe");
+            }
+    
+        } catch (error) {
+            console.error("Erreur lors de la création de la recette :", error);
+            toast.error("There was a problem with creating your recipe. Please try again!");
+        }
+    };
+    
 
   return (
 
@@ -363,9 +422,9 @@ export default function CreateRecipe() {
                 type="file"
                 id="recipe-photo"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={(e) => handleImageChange(e, "recipe")}
                 />
-                {imageUrl && <img src={imageUrl} alt="Aperçu de la recette" />}
+                {formValues.picture && <img src={formValues.picture} alt="Aperçu de la recette" />}
             </div> 
             <h2>Steps</h2>
             {formValues.steps.map((step, index) => (
@@ -410,6 +469,14 @@ export default function CreateRecipe() {
                     onChange={(event) => handleIngredientChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
+                <label htmlFor="ingredient-picture">Ingredient's picture</label>
+                <Input
+                type="file"
+                id={`tool-picture-${index}`}
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, "ingredient", index)}
+                />
+                {ingredient.picture && <img src={ingredient.picture} alt={`Ingredient ${index + 1} preview`} />}
                 <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} className="text-red-500" />
             </div>
             ))}
@@ -425,6 +492,14 @@ export default function CreateRecipe() {
                     onChange={(event) => handleToolChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
+                <label htmlFor="tool-picture">Ingredient's picture</label>
+                <Input
+                type="file"
+                id={`tool-picture-${index}`}
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, "tool", index)}
+                />
+                {tool.picture && <img src={tool.picture} alt={`Tool ${index + 1} preview`} />}
                 <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} className="text-red-500" />
             </div>
             ))}
