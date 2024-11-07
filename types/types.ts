@@ -97,3 +97,9 @@ interface TagType{
     id: string;
     name: string;
 }
+
+interface FavoriteType{
+    id: string;
+    userId: string;
+    recipeId: string;
+}
