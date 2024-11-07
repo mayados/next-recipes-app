@@ -6,8 +6,9 @@ import {LucideIcon} from 'lucide-react'
 interface ButtonProps {
   label:string;
   icon: LucideIcon;
+  iconFill?: string ;
   specifyBackground: string;
-  action?: () => void; 
+  action?: () => void | ((e: React.MouseEvent<HTMLButtonElement>) => void); 
   type?:  "submit" | "reset" | "button" | undefined;
 }
 
@@ -20,13 +21,13 @@ const findBackgroundColor =  (specifyBackground)  => {
 
 }
 
-const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, action, type}) => {
+const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, action, type, iconFill}) => {
 
   const backgroundColor = findBackgroundColor(specifyBackground);
 
   return (
         <button onClick={action} type={type} className={`flex items-center px-3 py-1 mt-1 ${backgroundColor} from-white hover:bg-pink-500 cursor-pointer rounded-lg`}>
-            <Icon className="mx-2" /> 
+            <Icon className="mx-2" fill={iconFill} /> 
             {label} 
         </button>
     )    
