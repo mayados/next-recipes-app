@@ -11,7 +11,6 @@ export async function POST(req: NextRequest)
 
     try{
 
-        console.log("Les données reçues en back sont : "+data)
         // We search if the user already exists in the database (beacause we use Clerk to manage users, but we have a local table User in the database)
         let dbUser = await db.user.findUnique({
             where: { 
