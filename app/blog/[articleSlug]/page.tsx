@@ -7,7 +7,10 @@ import { useEffect, useState, FormEvent } from "react";
 import { BookText } from 'lucide-react';
 import Image from 'next/image'
 import { MessageSquareText } from 'lucide-react';
-import CommentForm from '@/components/CommentForm'
+import CommentForm from '@/components/CommentForm';
+import { useUser } from "@clerk/nextjs";
+import toast, { Toaster } from 'react-hot-toast';
+
 
 
 const ArticleDetailPage = ({params}: {params: {articleSlug: string}}) => {
@@ -17,6 +20,7 @@ const ArticleDetailPage = ({params}: {params: {articleSlug: string}}) => {
     const [newComment, setNewComment] = useState({text: ""})
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const {user} = useUser()
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -24,8 +28,6 @@ const ArticleDetailPage = ({params}: {params: {articleSlug: string}}) => {
             const data: ArticleWithTagsAndComments = await response.json()
             setArticle(data)
             setComments(data.comments); 
-            console.log(data);
-
         }
         fetchArticle()
     }, [params.articleSlug])
@@ -37,10 +39,12 @@ const ArticleDetailPage = ({params}: {params: {articleSlug: string}}) => {
                 method: "DELETE",
             });
             if (response.ok) {
+                toast.success('Comment deleted with success');                 
                 setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
             }
         } catch (error) {
             console.error("Erreur lors de la suppression du commentaire :", error);
+            toast.error('Something went wrong with deleting your comment. Please try again !');                 
         }
       }
 
@@ -48,34 +52,46 @@ const ArticleDetailPage = ({params}: {params: {articleSlug: string}}) => {
         setNewComment({ text: e.target.value });
     };
 
+
     const addComment = async (e : FormEvent) => {
         // We don't want the form to refresh the page when submitted
         e.preventDefault()
+        if (!user) return; 
+
         try{
+
+            const { id, primaryEmailAddress, username } = user;
 
             const response = await fetch(`/api/comments/commentsArticle`, {
                 method: "POST",
                 // We use JSON.stringify to assign key => value in json string
-                body: JSON.stringify({text: newComment.text,
-                    userId: "6718be46cbfe3064f8998c23",
-                    articleId: "671b41a217e9611c3eec8ee7",
-                    createdAt: new Date().toISOString() 
+                body: JSON.stringify({
+                    text: newComment.text,
+                    clerkUserId: id,
+                    email: primaryEmailAddress,
+                    userPseudo: username,
+                    createdAt: new Date().toISOString(),
+                    articleId: article?.id,
                 })
             });
             if (response.ok) {
+                toast.success('Comment added with success');                 
                 const commentAdded = await response.json();
                 setComments(prevComments => [commentAdded['comment'],...prevComments, ]); 
-                setNewComment({text: ""});                        
+                setNewComment({text: ""});       
             }
 
         }catch(error){
-            console.error("Erreur lors de l'ajout du commentaire :", error);
+            console.error("Error with comment submission :", error);
+            toast.error('Something went wrong with submitting your comment. Please try again !');                 
+
         }
 
     }
 
   return (
     <div className='p-5'>
+        <div><Toaster/></div>
         <section className='bg-slate-800 flex flex-col gap-5 items-center justify-center h-[50vh] '>
             <div className='my-5 flex flex-wrap gap-3 '>
                 {article?.tags.map((tagArticle: TagArticleType) => (

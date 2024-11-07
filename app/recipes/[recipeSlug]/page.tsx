@@ -32,6 +32,9 @@ import Comment from "@/components/Comment";
 import { json } from "stream/consumers";
 import Link from "next/link";
 import DownloadPdf from "@/components/DownloadPdf";
+import { useUser } from "@clerk/nextjs";
+import toast, { Toaster } from 'react-hot-toast';
+
 
 
 const Recipe = ({params}: {params: {recipeSlug: string}}) => {
@@ -49,6 +52,8 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
 
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const {user} = useUser()
+    
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -89,15 +94,17 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
 
     const deleteComment = async (commentId: string) => {
         try {
-            const response = await fetch(`api/comments/delete/${commentId}`, {
+            const response = await fetch(`/api/comments/delete/${commentId}`, {
                 method: "DELETE",
             });
             if (response.ok) {
-                // Si l'appel à l'API fonctionne, on supprime le commentaire localement
+                toast.success('Comment deleted with success');      
+                // If the API's call is working, we delete the comment locally => update view           
                 setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
             }
         } catch (error) {
             console.error("Erreur lors de la suppression du commentaire :", error);
+            toast.error('Something went wrong with deleting your comment. Please try again');      
         }
     }
 
@@ -108,18 +115,24 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const addComment = async (e : FormEvent) => {
         // We don't want the form to refresh the page when submitted
         e.preventDefault()
+        if(!user) return;
         try{
 
-            const response = await fetch(`/api/comments/comentsRecipe`, {
+            const { id, primaryEmailAddress, username } = user;
+
+            const response = await fetch(`/api/comments/commentsRecipe`, {
                 method: "POST",
                 // We use JSON.stringify to assign key => value in json string
                 body: JSON.stringify({text: newComment.text,
-                    userId: "6718be46cbfe3064f8998c23",
-                    recipeId: "671750047bbc414450065a73",
+                    clerkUserId: id,
+                    email: primaryEmailAddress,
+                    userPseudo: username,
+                    recipeId: recipe?.id,
                     createdAt: new Date().toISOString() 
                 })
             });
             if (response.ok) {
+                toast.success('Comment added with success');      
                 const commentAdded = await response.json();
                 setComments(prevComments => [commentAdded['comment'],...prevComments, ]); 
                 setNewComment({text: ""});                        
@@ -127,6 +140,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
 
         }catch(error){
             console.error("Erreur lors de l'ajout du commentaire :", error);
+            toast.error('Something went wrong with deleting your comment. Please try again');      
         }
 
     }
@@ -135,6 +149,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
   return (
     
     <div className="p-5">
+        <div><Toaster/></div>
         <section className="lg:w-screen flex flex-col lg:flex-row h-[50vh] bg-gray-800 mt-5">
             {/* Basic informations */}
             <div className="lg:flex-1 flex flex-col h-[50vh] items-center justify-center lg:h-full">
@@ -255,6 +270,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             <Title label={`Comments (${comment.length})`} icon={MessageSquareQuote} />
             {comment.map((comment) => (
                 <>
+                {console.log("L'id du commentaire est : "+comment.id)}
                     <Comment key={comment.id} comment={comment} action={() => deleteComment(comment.id)} borderColor="border-slate-200" borderSize="border-2" />
                 </>
             ))}
