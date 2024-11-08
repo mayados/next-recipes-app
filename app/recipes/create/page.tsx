@@ -16,6 +16,7 @@ import cloudinary from "@/lib/cloudinary";
 export default function CreateRecipe() {
 
     const { user } = useUser();
+    console.log("Informations sur le user : "+user?.username)
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState("");
     const [categories, setCategories] = useState([]);
