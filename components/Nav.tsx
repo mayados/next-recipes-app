@@ -49,7 +49,8 @@ const Nav:React.FC<NavProps> = ({ logo}) => {
                   <li key={element.title}><a href={`${element.url}`}>{element.title}</a></li>                    
                 ) : null
               )}
-            <UserButton />
+            {/* <UserButton /> */}
+            <UserButton userProfileUrl="/profile" />
           </SignedIn>      
           <DarkModeToggle />         
         </ul>
