@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { useEffect, useState, createContext, useContext } from 'react';
 import Nav from '@/components/Nav'
 import {
   ClerkProvider,
+  useUser,
   SignInButton,
   SignedIn,
   SignedOut,
   UserButton
 } from '@clerk/nextjs'
-
-
+import { UserProvider } from '@/components/UserProvider';
 
 
 const geistSans = localFont({
@@ -36,14 +37,16 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body>
-          <Nav logo="MyRecipes" />
-          <main>
-            {children}
-          </main>        
-        </body>
-      </html>
+        <UserProvider>
+          <html lang="en">
+            <body>
+              <Nav logo="MyRecipes" />
+              <main className="w-screen px-5">
+                {children}
+              </main>        
+            </body>
+          </html>
+        </UserProvider>
     </ClerkProvider>
   );
 }
