@@ -9,6 +9,14 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'via.placeholder.com',
             },
+            {
+                protocol: 'https',
+                hostname: 'images.clerk.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'www.gravatar.com',
+            },
         ],
     }
 }
