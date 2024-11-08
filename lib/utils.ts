@@ -29,6 +29,7 @@ export function checkUserRole(session) {
     return null; // Return null if no role is found in the memberships
   }
 
+  // To create a slug from a string
   export function slugify(str: string){
     str = str.replace(/^\s+|\s+$/g, ''); // trim leading/trailing white space
     str = str.toLowerCase(); // convert string to lowercase
@@ -38,4 +39,11 @@ export function checkUserRole(session) {
     return str;
   }
 
+
+// Capitalize first letter of a string
+export function capitalizeFirstLetter(word: string){
+  // retrieve the first letter of the word, put it to upperCase and add the remaining letters of the word
+  const capitalizedFirstLetterWord = word.charAt(0).toUpperCase()+ word.slice(1)
+  return capitalizedFirstLetterWord;
+}
   
