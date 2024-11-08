@@ -16,6 +16,8 @@ interface RecipeCardProps{
     difficultyLevel?: number | undefined;
     isHealthy: boolean;
     IsVegan: boolean;
+    // If we need to add more buttons
+    additionalButtonComponents?: React.ReactNode[];
 }
 
   // Display icons if the recipe is vegan, healthy or both
@@ -125,15 +127,15 @@ const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
 }
 
 
-const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficultyLevel, isHealthy, IsVegan }) => {
+const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficultyLevel, isHealthy, IsVegan, additionalButtonComponents }) => {
   const difficulty = displayDifficultyLevel(difficultyLevel);
   const topIcons = displayTopIcons(isHealthy, IsVegan);
 
   return (
-    <div className='group border-slate-700 border-2 rounded-md hover:bg-gray-600 cursor-pointer hover:-translate-y-2 duration-500'>
+    <div className='group border-slate-700 border-2 rounded-md w-[250px] '>
         <div className='relative'>
           <CldImage
-                alt=""
+                alt={recipe.title}
                 src={recipe.picture}
                 width="250"
                 height="250"
@@ -152,8 +154,15 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
           <ul className='flex flex-wrap gap-2'>
               {difficulty}
           </ul>
-          
-          <LinkButton key={recipe.id} label="View Recipe" icon={ArrowRight} path="/recipes/" dynamicPath={recipe.slug} />          
+          {/* Render the CustomButtonComponents if provided */}
+          {additionalButtonComponents && additionalButtonComponents.map((component, index) => (
+            <div key={index} className="my-2">{component}</div>  // Optional styling for spacing
+          ))}
+
+          {/* Default button if no CustomButtonComponents are passed */}
+          {!additionalButtonComponents && 
+            <LinkButton key={recipe.id} label="View Recipe" icon={ArrowRight} path="/recipes/" dynamicPath={recipe.slug} />
+          }          
         </div>
 
     </div>
