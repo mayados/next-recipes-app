@@ -41,7 +41,7 @@ export default function RootLayout({
           <html lang="en">
             <body>
               <Nav logo="MyRecipes" />
-              <main className="w-screen px-5">
+              <main className="w-screen p-5">
                 {children}
               </main>        
             </body>
