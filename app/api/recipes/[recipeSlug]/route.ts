@@ -20,7 +20,11 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
                         ingredient: true,
                     }
                 },
-                steps: true,
+                steps: {
+                    orderBy: {
+                        number: 'asc' 
+                    }
+                },
                 category: true,
                 recipetools: {
                     include: {
