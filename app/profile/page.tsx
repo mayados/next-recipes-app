@@ -54,6 +54,7 @@ const Profile = () => {
                 method: "DELETE",
             });
             if (response.ok) {
+                closeDeleteDialog();
                 toast.success('Recipe deleted with success');                 
                 setRecipes(prevRecipes => prevRecipes.filter(recipe => recipe.id !== recipeId));
             }
