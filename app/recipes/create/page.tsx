@@ -16,7 +16,7 @@ import cloudinary from "@/lib/cloudinary";
 export default function CreateRecipe() {
 
     const { user } = useUser();
-    console.log("Informations sur le user : "+user?.username)
+    // console.log("Informations sur le user : "+user?.username)
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState("");
     const [categories, setCategories] = useState([]);
@@ -126,19 +126,25 @@ export default function CreateRecipe() {
     // INGREDIENTS
     // Retrieve data from the form for ingredients
     const handleIngredientChange = (index, event) => {
-        const { name,slug, value } = event.target;
+        const { name, value } = event.target;
         const newIngredients = [...formValues.ingredients];
+        
         newIngredients[index] = {
             ...newIngredients[index],
             [name]: value,
-            [slug]: slugify(value)
         };
+    
+        // Slug generated just for the field name
+        if (name === "name") {
+            newIngredients[index].slug = slugify(value);
+        }
+    
         setFormValues({
             ...formValues,
             ingredients: newIngredients,
         });
-        // console.log(formValues)
     };
+    
 
 
     // Add an ingredient
@@ -165,6 +171,7 @@ export default function CreateRecipe() {
         newTools[index] = {
             ...newTools[index],
             label: value,
+            slug: slugify(value)  
         };
         setFormValues({
             ...formValues,
@@ -235,6 +242,8 @@ export default function CreateRecipe() {
                 slug: slugify(ingredient.name),
                 name: ingredient.name.toLowerCase(),
             }));
+
+            // console.log("ingredient "+formValues.ingredients)
     
             const tools = formValues.tools.map((tool) => ({
                 ...tool,
@@ -261,16 +270,16 @@ export default function CreateRecipe() {
     
             // We wait for all the uploads to be completed because we need each one of them to add in the database
             const uploadResults = await Promise.all(uploadPromises);
-            console.log("Les résultats des différents uploads sont : "+uploadResults)
+            // console.log("Les résultats des différents uploads sont : "+uploadResults)
     
             // Create temporary variable to stock new urls from cloudinary (not temporary urls anymore) => We have to do this because setFormValues is asynchrone, so we have to be sure the new values are added when the form is submitted, which is not the case with setFormValues 
             let updatedFormValues = { ...formValues };
 
            // update urls of ingredients and tools
             uploadResults.forEach(({ url, type, index }) => {
-                console.log(`Type: ${type}, Index: ${index}, URL: ${url}`);
+                // console.log(`Type: ${type}, Index: ${index}, URL: ${url}`);
                 if (type === "recipe") {
-                    console.log("L'url de la recette est : "+url)
+                    // console.log("L'url de la recette est : "+url)
                     updatedFormValues.picture = url;
                   } else if (type == "ingredient") {
                     console.log("L'url de l'ingrédient est : "+url)
@@ -291,6 +300,7 @@ export default function CreateRecipe() {
             console.log('Recieved recipe picture:', formValues.picture);
             console.log('Recieved ingredients pictures:', ingredients.map(i => i.picture));
             console.log('Recieved tools pictures:', tools.map(t => t.picture));
+            console.log("ISVEGAN "+formValues.isVegan)
 
             // Recipe's creation
             const slug = slugify(formValues.title);
