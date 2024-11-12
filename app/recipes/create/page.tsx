@@ -418,7 +418,7 @@ export default function CreateRecipe() {
                 <Select
                     id="category"
                     value={selectedCategory}
-                    onChange={handleCategoryChange} // Met à jour l'état lors de la sélection
+                    onChange={handleCategoryChange}
                     className="w-full rounded-md bg-gray-700 text-white pl-3"
                 >
                 <option value="" disabled>Select a category</option>
