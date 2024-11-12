@@ -148,7 +148,6 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
         </div>
         <div className='p-3 text-left'>
           <h2 className='text-xl font-bold mb-3'>{recipe.title}</h2>
-          {/* Tag of the recipe's category*/}
           <CategoryTag categoryName={categoryName} />
           <p className='text-sm text-slate-300 flex mb-3'><Timer />{recipe.timePreparation} min.</p>
           <ul className='flex flex-wrap gap-2'>
@@ -156,7 +155,7 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
           </ul>
           {/* Render the CustomButtonComponents if provided */}
           {additionalButtonComponents && additionalButtonComponents.map((component, index) => (
-            <div key={index} className="my-2">{component}</div>  // Optional styling for spacing
+            <div key={index} className="my-2">{component}</div>  
           ))}
 
           {/* Default button if no CustomButtonComponents are passed */}
