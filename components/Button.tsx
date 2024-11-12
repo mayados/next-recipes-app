@@ -21,7 +21,7 @@ const findBackgroundColor =  (specifyBackground)  => {
 
 }
 
-const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, action, type, iconFill}) => {
+const Button:React.FC<ButtonProps> = ({label, icon: Icon, specifyBackground, action, type, iconFill=""}) => {
 
   const backgroundColor = findBackgroundColor(specifyBackground);
 
