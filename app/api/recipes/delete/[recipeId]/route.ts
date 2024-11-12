@@ -8,6 +8,25 @@ export async function DELETE(req: NextRequest, {params}: {params: {recipeId: str
 
     try{
 
+
+        const recipeToolToDelete = await db.recipeTool.deleteMany({
+            where: {
+                recipeId: recipeId
+            }
+        });
+
+        const compositionsToDelete = await db.composition.deleteMany({
+            where: {
+                recipeId: recipeId
+            }
+        });
+
+        const stepsToDelete = await db.step.deleteMany({
+            where: {
+                recipeId: recipeId
+            }
+        });
+
         const recipeToDelete = await db.recipe.delete({
             where: {
                 id: recipeId
