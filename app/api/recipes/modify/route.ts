@@ -56,35 +56,57 @@ export async function PUT(req: NextRequest) {
       await db.step.createMany({ data: newSteps });
     }
 
-    if (ingredients) {
-      await db.composition.deleteMany({ where: { recipeId: updatedRecipe.id } });
-      const newIngredients = ingredients.map((ingredient) => ({
-        ingredient: {
-          connectOrCreate: {
-            where: { slug: ingredient.slug },
-            create: { label: ingredient.name, slug: ingredient.slug, picture: ingredient.picture },
-          },
-        },
-        quantity: parseFloat(ingredient.quantity),
-        unit: ingredient.unit,
-        recipeId: updatedRecipe.id,
-      }));
-      await db.composition.createMany({ data: newIngredients });
-    }
-
-    if (tools) {
-      await db.recipeTool.deleteMany({ where: { recipeId: updatedRecipe.id } });
-      const newTools = tools.map((tool) => ({
-        tool: {
-          connectOrCreate: {
-            where: { slug: tool.slug },
-            create: { label: tool.label, slug: tool.slug, picture: tool.picture },
-          },
-        },
-        recipeId: updatedRecipe.id,
-      }));
-      await db.recipeTool.createMany({ data: newTools });
-    }
+    if (ingredients.length > 0) {
+        // delete former compositions
+        await db.composition.deleteMany({ where: { recipeId: updatedRecipe.id } });
+      
+        // Prepare each ingredient
+        for (const composition of ingredients) {
+          await db.ingredient.upsert({
+            where: { slug: composition.ingredient.slug },
+            update: {},
+            create: {
+              label: composition.ingredient.label,
+              slug: composition.ingredient.slug,
+              picture: composition.ingredient.picture,
+            },
+          });
+        }
+      
+        // prepare datas for createMany
+        const newCompositions = ingredients.map((composition) => ({
+          quantity: parseFloat(composition.quantity),
+          unit: composition.unit,
+          recipeId: updatedRecipe.id,
+          ingredientId: composition.ingredientId,
+        }));
+      
+        await db.composition.createMany({ data: newCompositions });
+      }
+      
+      if (tools && tools.length > 0) {
+        await db.recipeTool.deleteMany({ where: { recipeId: updatedRecipe.id } });
+      
+        for (const recipeTool of tools) {
+          await db.tool.upsert({
+            where: { slug: recipeTool.tool.slug },
+            update: {},
+            create: {
+              label: recipeTool.tool.label,
+              slug: recipeTool.tool.slug,
+              picture: recipeTool.tool.picture,
+            },
+          });
+        }
+      
+        const newTools = tools.map((recipeTool) => ({
+          recipeId: updatedRecipe.id,
+          toolId: recipeTool.toolId, 
+        }));
+      
+        await db.recipeTool.createMany({ data: newTools });
+      }
+      
 
     return NextResponse.json({ message: "Recipe updated successfully", updatedRecipe }, { status: 200 });
   } catch (error) {
