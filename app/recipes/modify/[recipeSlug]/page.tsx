@@ -10,6 +10,8 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from 'react-hot-toast';
 import { slugify } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+
 
 
 
@@ -39,6 +41,8 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const {user} = useUser()
+    const router = useRouter();
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -108,10 +112,14 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ title, instructions, ingredients, tools, steps, mapicture ,slugRecipe, preparationTime, selectedCategory, isVegan, isHealthy, difficulty  }),
+              body: JSON.stringify({ title, instructions, ingredients, tools, steps, recipePicture ,slugRecipe, preparationTime, selectedCategory, isVegan, isHealthy, difficulty  }),
             });
             if (response.ok) {
-              router.push("/profile"); 
+                try {
+                    await router.push("/profile");
+                } catch (err) {
+                    console.error("Redirection to the profile failed :", err);
+                }
             }
         }catch (error) {
             console.error("Erreur lors de la modification de la recette :", error);
