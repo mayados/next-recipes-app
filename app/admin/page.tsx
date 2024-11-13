@@ -1,5 +1,6 @@
 "use client";
 
+import AdminNav from "@/components/AdminNav";
 
 const Admin = () =>{
 
@@ -7,8 +8,13 @@ const Admin = () =>{
   return (
 
     <>
-        <h1 className="text-3xl text-white">Administration</h1>
-
+    <div className="flex w-screen">
+      {/* Navigation menu for admin */}
+      <AdminNav />
+      <section className="border-2 border-green-800 flex-[8]">
+        <h1 className="text-3xl text-white text-center">Administration</h1>   
+      </section>     
+    </div>
     </>
 
   )
