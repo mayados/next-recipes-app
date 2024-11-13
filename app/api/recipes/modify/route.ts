@@ -88,6 +88,7 @@ export async function PUT(req: NextRequest) {
         await db.recipeTool.deleteMany({ where: { recipeId: updatedRecipe.id } });
       
         for (const recipeTool of tools) {
+        // upsert allows to update or create elements in function of their existence
           await db.tool.upsert({
             where: { slug: recipeTool.tool.slug },
             update: {},
