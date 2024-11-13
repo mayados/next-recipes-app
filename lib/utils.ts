@@ -47,3 +47,9 @@ export function capitalizeFirstLetter(word: string){
   return capitalizedFirstLetterWord;
 }
   
+// Convert milliseconds to date
+export function convertMillisecondsToDate(milliseconds: number){
+  let retrieveDate = new Date(milliseconds);  
+  const date = retrieveDate.toString()  
+  return date;
+}
