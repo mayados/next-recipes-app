@@ -141,8 +141,9 @@ const UserDetails = ({params}: {params: {clerkUserId: string}}) => {
           if (response.ok) {
             const updatedDatas = await response.json();
             toast.success("User updated with success");
+            console.log('mise ç jour'+updatedDatas.profileImageUrl)
             setUserName(updatedDatas.newUsername)
-            setUserPicture(updatedDatas.newPicture)
+            setUserPicture(updatedDatas.profileImageUrl)
             console.log(updatedDatas.newPicture)
             setUserMail(updatedDatas.newMail)
             console.log(updatedDatas.newMail)
@@ -164,7 +165,7 @@ const UserDetails = ({params}: {params: {clerkUserId: string}}) => {
       <div><Toaster/></div>
       <section className='flex gap-5 items-center p-2 rounded-md bg-gray-700'>
         <Image
-          src={user?.image_url }
+          src={userPicture }
           width={'100'}
           height={'100'}
           alt={user?.username}
