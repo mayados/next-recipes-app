@@ -18,7 +18,8 @@ export async function GET(req: NextRequest) {
             createdAt: 'desc'
             },
             include: {
-                category: true
+                category: true,
+                user: true,
             },
         })
 
