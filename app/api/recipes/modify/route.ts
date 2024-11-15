@@ -16,7 +16,8 @@ export async function PUT(req: NextRequest) {
     isVegan, 
     isHealthy, 
     difficulty, 
-    slugRecipe 
+    slugRecipe, 
+    newSlug,
   } = data;
 
   try {
@@ -33,6 +34,7 @@ export async function PUT(req: NextRequest) {
       where: { slug: slugRecipe },
       data: {
         title,
+        slug: newSlug,
         instructions,
         picture: recipePicture || existingRecipe.picture,
         timePreparation: parseInt(preparationTime),
