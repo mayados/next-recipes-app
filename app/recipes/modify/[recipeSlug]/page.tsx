@@ -97,6 +97,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                     });
             
                     const data = await response.json();
+                    console.log("data de cloudinary : "+data)
                     return data.url;  
                     
                 }
@@ -106,15 +107,17 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
             const recipePicture = await uploadRecipeImage();
             console.log("la vraie url de l'image est : "+recipePicture)
             const slugRecipe = recipe?.slug
+            const newSlug = slugify(title)
 
             const response = await fetch(`/api/recipes/modify`, {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ title, instructions, ingredients, tools, steps, recipePicture ,slugRecipe, preparationTime, selectedCategory, isVegan, isHealthy, difficulty  }),
+              body: JSON.stringify({ title, instructions, ingredients, tools, steps, recipePicture ,slugRecipe,newSlug, preparationTime, selectedCategory, isVegan, isHealthy, difficulty  }),
             });
             if (response.ok) {
+                toast.success("Recipe updated successfully !");
                 try {
                     await router.push("/profile");
                 } catch (err) {
