@@ -39,6 +39,7 @@ interface CompositionType{
 interface ToolType{
     id: string;
     label: string;
+    slug: string;
     picture: string;
     composition: CompositionType;
 }
