@@ -29,6 +29,9 @@ export default function CreateRecipe() {
     const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyChoices[0])
     // For the preview of an image, when it's uploaded
     const [imagePreviews, setImagePreviews] = useState([]);
+    const [ingredientSuggestions, setIngredientSuggestions] = useState([]); // Pour stocker les suggestions
+    const [toolSuggestions, setToolSuggestions] = useState([]); // Pour stocker les suggestions
+
     
 
     // Because we have plenty of values to retrieve from the creation form : 
@@ -124,6 +127,72 @@ export default function CreateRecipe() {
     }
 
     // INGREDIENTS
+    const fetchIngredientSuggestions = async (query) => {
+        if (query.length < 2) return; 
+        try {
+            const response = await fetch(`/api/ingredients/search?query=${query}`);
+            const data = await response.json();
+            console.log("API response data:", data); 
+    
+            if (Array.isArray(data) && data.length > 0) {
+                setIngredientSuggestions(data); 
+            } else {
+                setIngredientSuggestions([]); 
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération des suggestions d'ingrédients :", error);
+        }
+    };
+    
+
+    // Gestion du changement dans le champ de nom d'ingrédient
+    const handleIngredientNameChange = (index, event) => {
+        const { value } = event.target;
+        const newIngredients = [...formValues.ingredients];
+        newIngredients[index] = {
+            ...newIngredients[index],
+            name: value,
+            slug: slugify(value),
+        };
+
+        setFormValues({
+            ...formValues,
+            ingredients: newIngredients,
+        });
+
+        // Call the function to get suggestions
+        fetchIngredientSuggestions(value);
+    };
+
+    // Lorsqu'un ingrédient suggéré est cliqué
+// Lorsqu'un ingrédient suggéré est cliqué
+const handleSuggestionClick = (index, suggestion) => {
+    // Vérifier l'objet ingredient avant et après modification
+    console.log('Avant mise à jour:', formValues.ingredients[index]);
+
+    // Créer une copie des ingrédients pour éviter la mutation directe
+    const newIngredients = [...formValues.ingredients];
+
+    // Mise à jour de l'ingrédient à l'index spécifique
+    newIngredients[index] = {
+        ...newIngredients[index],
+        name: suggestion.label,   // Mise à jour du nom de l'ingrédient
+        slug: suggestion.slug,   // Mise à jour du slug si nécessaire
+    };
+
+    // Vérifier l'objet après modification
+    console.log('Après mise à jour:', newIngredients[index]);
+
+    // Mettre à jour l'état global avec la copie modifiée
+    setFormValues({
+        ...formValues,
+        ingredients: newIngredients,
+    });
+
+    // Fermer les suggestions après la sélection
+    setIngredientSuggestions([]);
+};
+
     // Retrieve data from the form for ingredients
     const handleIngredientChange = (index, event) => {
         const { name, value } = event.target;
@@ -144,8 +213,6 @@ export default function CreateRecipe() {
             ingredients: newIngredients,
         });
     };
-    
-
 
     // Add an ingredient
     const addIngredient = () => {
@@ -165,6 +232,47 @@ export default function CreateRecipe() {
     };
 
     // TOOLS
+
+    const fetchToolSuggestions = async (query) => {
+        // if the query is shorter than 2 char we don't make the API call
+        if (query.length < 2) return;
+ 
+            try {
+                const response = await fetch(`/api/tools/search?query=${query}`);
+                const data = await response.json();
+        
+                if (Array.isArray(data) && data.length > 0) {
+                    setToolSuggestions(data);  
+                } else {
+                    setToolSuggestions([]);  
+                }
+            } catch (error) {
+                console.error("Error when retrieving tool suggestions", error);
+            }
+    };
+    
+    const handleToolSuggestionClick = (index, suggestion) => {
+    
+        // Create a copy of the tools
+        const newTools = [...formValues.tools];
+    
+        // Update tool at the great index
+        newTools[index] = {
+            ...newTools[index],
+            name: suggestion.label,   
+            slug: suggestion.slug,   
+        };
+    
+        
+        setFormValues({
+            ...formValues,
+            tools: newTools,
+        });
+    
+        // After click on the selection, "clean" the array
+        setToolSuggestions([]);
+    };
+
     const handleToolChange = (index, event) => {
         const { value } = event.target;
         const newTools = [...formValues.tools];
@@ -178,6 +286,8 @@ export default function CreateRecipe() {
             tools: newTools,
         });
         // console.log(formValues)
+        fetchToolSuggestions(value);
+
     };
 
     const addTool = () => {
@@ -461,9 +571,26 @@ export default function CreateRecipe() {
                     name="name"
                     placeholder="Ingredient name"
                     value={ingredient.name}
-                    onChange={(event) => handleIngredientChange(index, event)}
+                    onChange={(event) => handleIngredientNameChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
+                {/* Suggestions d'ingrédients */}
+                {ingredientSuggestions.length > 0 ? (
+                <ul>
+                    {ingredientSuggestions.map((ingredient) => (
+                        <li 
+                            key={ingredient.id}
+                            onClick={() => handleSuggestionClick(index, ingredient)}  // Ajout du gestionnaire de clic
+                            className="cursor-pointer text-blue-500 hover:text-blue-700"
+                        >
+                            {ingredient.label}
+                        </li>
+                    ))}
+                </ul>
+                    ) : (
+                        <p>Aucune suggestion disponible</p>
+                    )}
+
                 <Input
                     type="number"
                     name="quantity"
@@ -480,14 +607,6 @@ export default function CreateRecipe() {
                     onChange={(event) => handleIngredientChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <label htmlFor="ingredient-picture">Ingredient's picture</label>
-                <Input
-                type="file"
-                id={`tool-picture-${index}`}
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "ingredient", index)}
-                />
-                {ingredient.picture && <img src={ingredient.picture} alt={`Ingredient ${index + 1} preview`} />}
                 <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} className="text-red-500" />
             </div>
             ))}
@@ -503,14 +622,22 @@ export default function CreateRecipe() {
                     onChange={(event) => handleToolChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <label htmlFor="tool-picture">Ingredient's picture</label>
-                <Input
-                type="file"
-                id={`tool-picture-${index}`}
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, "tool", index)}
-                />
-                {tool.picture && <img src={tool.picture} alt={`Tool ${index + 1} preview`} />}
+                {/* tools suggestions */}
+                {toolSuggestions.length > 0 ? (
+                <ul>
+                    {toolSuggestions.map((suggestion) => (
+                        <li 
+                            key={suggestion.id}
+                            onClick={() => handleToolSuggestionClick(index, suggestion)}  // Ajout du gestionnaire de clic
+                            className="cursor-pointer text-blue-500 hover:text-blue-700"
+                        >
+                            {suggestion.label}
+                        </li>
+                    ))}
+                </ul>
+                    ) : (
+                        <p>Aucune suggestion disponible</p>
+                    )}
                 <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} className="text-red-500" />
             </div>
             ))}
