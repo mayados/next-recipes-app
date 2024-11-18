@@ -53,3 +53,8 @@ export function convertMillisecondsToDate(milliseconds: number){
   const date = retrieveDate.toString()  
   return date;
 }
+
+// Truncate text to a number of chars and add "..."
+export function truncateText(text: string, maxLength = 100){
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+};
