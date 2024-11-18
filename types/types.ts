@@ -87,6 +87,25 @@ interface ArticleWithTagsAndComments{
     user: UserType;
 }
 
+interface ArticleWithTagsAndUser{
+    id: string;
+    title: string;
+    text: string;
+    slug: string;
+    createdAt: Date;
+    tags: TagArticleType[];
+    user: UserType;
+}
+
+interface ArticleType{
+    id: string;
+    title: string;
+    text: string;
+    slug: string;
+    createdAt: Date;
+    tags: TagArticleType[];
+}
+
 interface TagArticleType{
     id: string;
     // Ici c'est du chaînage : on réfère le type TagType comme type de la propriété tag de cette interface
@@ -102,4 +121,26 @@ interface FavoriteType{
     id: string;
     userId: string;
     recipeId: string;
+}
+
+interface CommentArticleDetails{
+    id: string;
+    text: string;
+    createdAt: Date;
+    user: UserType;
+    article: ArticleType;
+}
+
+interface CommentArticle{
+    id: string;
+    text: string;
+    createdAt: Date;
+    user: UserType;
+}
+
+interface CommentRecipe{
+    id: string;
+    text: string;
+    createdAt: Date;
+    user: UserType;
 }
