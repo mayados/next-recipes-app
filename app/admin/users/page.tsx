@@ -21,7 +21,7 @@ const Users = () =>{
         }
     
         fetchUsers()
-      });
+      },[]);
 
       users.map((user) => (
         

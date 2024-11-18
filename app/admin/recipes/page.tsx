@@ -24,7 +24,7 @@ const Recipes = () =>{
         }
     
         fetchRecipes()
-      });
+    },[]);
 
       recipes.map((recipe) => (
         
