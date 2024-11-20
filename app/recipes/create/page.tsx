@@ -176,8 +176,8 @@ const handleSuggestionClick = (index, suggestion) => {
     // Mise à jour de l'ingrédient à l'index spécifique
     newIngredients[index] = {
         ...newIngredients[index],
-        name: suggestion.label,   // Mise à jour du nom de l'ingrédient
-        slug: suggestion.slug,   // Mise à jour du slug si nécessaire
+        name: suggestion.label, 
+        slug: suggestion.slug,   
     };
 
     // Vérifier l'objet après modification
@@ -255,13 +255,18 @@ const handleSuggestionClick = (index, suggestion) => {
     
         // Create a copy of the tools
         const newTools = [...formValues.tools];
+        console.log('Avant mise à jour, outil:', newTools[index]);
+
     
         // Update tool at the great index
         newTools[index] = {
             ...newTools[index],
             name: suggestion.label,   
+            label: suggestion.label,   
             slug: suggestion.slug,   
         };
+        console.log('slug -Après mise à jour, outil:', newTools[index]);
+
     
         
         setFormValues({
@@ -273,22 +278,52 @@ const handleSuggestionClick = (index, suggestion) => {
         setToolSuggestions([]);
     };
 
+    // const handleToolChange = (index, event) => {
+    //     const { name,value } = event.target;
+    //     const newTools = [...formValues.tools];
+    //     newTools[index] = {
+    //         ...newTools[index],
+    //         [name]: value,
+    //         slug: slugify(value)  
+    //     };
+
+    //     // Slug generated just for the field name
+    //     if (name === "name") {
+    //         newTools[index].slug = slugify(value);
+    //     }
+
+    //     setFormValues({
+    //         ...formValues,
+    //         tools: newTools,
+    //     });
+    //     // console.log(formValues)
+    //     fetchToolSuggestions(value);
+        
+    // };
+
     const handleToolChange = (index, event) => {
-        const { value } = event.target;
+        const { name, value } = event.target;
         const newTools = [...formValues.tools];
+    
         newTools[index] = {
             ...newTools[index],
+            [name]: value,
             label: value,
-            slug: slugify(value)  
         };
+    
+        // Slug generated just for the field name (same as in handleIngredientChange)
+        if (name === "name") {
+            newTools[index].slug = slugify(value);
+        }
+    
         setFormValues({
             ...formValues,
             tools: newTools,
         });
-        // console.log(formValues)
+    
         fetchToolSuggestions(value);
-
     };
+    
 
     const addTool = () => {
         setFormValues({
@@ -339,11 +374,14 @@ const handleSuggestionClick = (index, suggestion) => {
     const addRecipe = async (e: FormEvent) => {
         // avoi reload of the page when click on submit button
         e.preventDefault(); 
+        console.log("dans la fonction de création")
     
         // If the user in not connected we return
         if (!user) return; 
     
         try {
+            console.log("dans le try de création")
+
             const { id, primaryEmailAddress, username } = user;
     
             // Slugify et put to lower case ingredients and tools
@@ -360,7 +398,14 @@ const handleSuggestionClick = (index, suggestion) => {
                 slug: slugify(tool.label),
                 label: tool.label.toLowerCase(),
             }));
-    
+
+            tools.forEach(tool => {
+                console.log("tool qui va partir en bdd : "+tool.slug)
+            });
+
+            console.log("Les tools : "+formValues.tools)
+
+
             // Prepare image's upload for each tool and ingredient
             const uploadPromises = formValues.images.map(async ({ file, type, index }) => {
                 const formData = new FormData();
@@ -392,8 +437,8 @@ const handleSuggestionClick = (index, suggestion) => {
                     // console.log("L'url de la recette est : "+url)
                     updatedFormValues.picture = url;
                   } else if (type == "ingredient") {
-                    console.log("L'url de l'ingrédient est : "+url)
-                    console.log("je tente d'acceder à l'ingrédient: "+ingredients[index].picture)
+                    // console.log("L'url de l'ingrédient est : "+url)
+                    // console.log("je tente d'acceder à l'ingrédient: "+ingredients[index].picture)
                     updatedFormValues.ingredients[index] = {
                         ...updatedFormValues.ingredients[index],
                         picture: url,
@@ -407,13 +452,17 @@ const handleSuggestionClick = (index, suggestion) => {
                   }
             });
     
-            console.log('Recieved recipe picture:', formValues.picture);
-            console.log('Recieved ingredients pictures:', ingredients.map(i => i.picture));
-            console.log('Recieved tools pictures:', tools.map(t => t.picture));
-            console.log("ISVEGAN "+formValues.isVegan)
+            // console.log('Recieved recipe picture:', formValues.picture);
+            // console.log('Recieved ingredients pictures:', ingredients.map(i => i.picture));
+            // console.log('Recieved tools pictures:', tools.map(t => t.picture));
+            // console.log("ISVEGAN "+formValues.isVegan)
 
             // Recipe's creation
             const slug = slugify(formValues.title);
+            formValues.steps.forEach(step => {
+                console.log("Un des steps qui va aller en bdd : "+step.text)
+            });
+            console.log("slug de la recipe "+slug)
             const response = await fetch(`/api/recipes/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
