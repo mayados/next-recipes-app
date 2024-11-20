@@ -42,6 +42,18 @@ export async function POST(req: NextRequest) {
             },
         });
 
+
+        const recipeSteps = steps.map(async (step) => {
+            await db.step.create({
+                data: {
+                    text: String(step.text),
+                    number: parseInt(step.number),
+                    recipeId: recipe.id,
+                },
+            });
+        });
+
+
         const ingredientEntries = await Promise.all(
             ingredients.map(async (ingredient) => {
                 let existingIngredient = await db.ingredient.findUnique({
@@ -54,7 +66,7 @@ export async function POST(req: NextRequest) {
                         data: {
                             label: String(ingredient.name),
                             slug: ingredient.slug,  // Enregistre le slug sans vérification d'unicité
-                            picture: ingredient.picture || "pictureIngredient",
+                            picture: ingredient.picture || "https://res.cloudinary.com/dsq38bxum/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg",
                         },
                     });
                 }
@@ -79,40 +91,39 @@ export async function POST(req: NextRequest) {
             });
         });
 
-        const recipeSteps = steps.map(async (step) => {
-            await db.step.create({
-                data: {
-                    text: String(step.text),
-                    number: parseInt(step.number),
-                    recipeId: recipe.id,
-                },
-            });
-        });
-
         const toolPromises = tools.map(async (tool) => {
             let existingTool = await db.tool.findUnique({
                 where: { label: tool.label }
             });
-
+        
             // if the tool doesn't exist, we create it
             if (!existingTool) {
                 existingTool = await db.tool.create({
                     data: {
                         label: String(tool.label),
-                        slug: tool.slug,
-                        picture: tool.picture || "pictureIngredient",
+                        slug: tool.slug || 'slug-pas-unique',
+                        picture: tool.picture || "https://res.cloudinary.com/dsq38bxum/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg",
                     },
                 });
             }
-
+        
+            // Associate the tool with the recipe
             await db.recipeTool.create({
                 data: {
                     recipeId: recipe.id,
-                    toolId: existingTool.id, 
+                    toolId: existingTool.id,
                 },
             });
+        
+            return {
+                toolId: existingTool.id,
+                slug: existingTool.slug
+            };
         });
+        
+        
 
+        console.log("Les outils : "+toolPromises)
         // Wait for all the promises to be resolved
         await Promise.all([...compositionPromises, ...recipeSteps, ...toolPromises]);
 
