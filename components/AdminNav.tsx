@@ -13,6 +13,7 @@ const AdminNav:React.FC = () => {
         <li className="hover:bg-slate-800 p-2 hover:cursor-pointer"><Link href={`/admin/tags`}>Tags</Link></li>
         <li className="hover:bg-slate-800 p-2 hover:cursor-pointer"><Link href={`/admin/ingredients`}>Ingredients</Link></li>
         <li className="hover:bg-slate-800 p-2 hover:cursor-pointer"><Link href={`/admin/tools`}>Tools</Link></li>
+        <li className="hover:bg-slate-800 p-2 hover:cursor-pointer"><Link href={`/admin/categories`}>Categories</Link></li>
         </ul>
     </aside>
   )
