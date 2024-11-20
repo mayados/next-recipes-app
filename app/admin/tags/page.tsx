@@ -2,7 +2,6 @@
 
 import AdminNav from "@/components/AdminNav";
 import { useEffect, useState } from "react";
-import { formatDate } from '@/lib/utils'
 import { Trash2 } from 'lucide-react';
 import Button from "@/components/Button";
 import toast, { Toaster } from 'react-hot-toast';
