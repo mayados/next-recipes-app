@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { useEffect, useState, createContext, useContext } from 'react';
-import Nav from '@/components/Nav'
+import Nav from '@/components/Nav';
 import {
   ClerkProvider,
-  useUser,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs'
+} from '@clerk/nextjs';
 import { UserProvider } from '@/components/UserProvider';
-
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,21 +25,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <ClerkProvider>
-        <UserProvider>
-          <html lang="en">
-            <body>
-              <Nav logo="MyRecipes" />
-              <main className="w-screen p-5">
-                {children}
-              </main>        
-            </body>
-          </html>
-        </UserProvider>
-    </ClerkProvider>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="bg-gray-100 text-gray-900">
+        <ClerkProvider>
+          <UserProvider>
+            <Nav logo="MyRecipes" />
+            <main className="w-screen p-5">
+              {children}
+            </main>
+          </UserProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
