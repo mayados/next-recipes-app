@@ -8,10 +8,10 @@ const Admin = () =>{
   return (
 
     <>
-    <div className="flex w-screen">
+    <div className="flex">
       {/* Navigation menu for admin */}
       <AdminNav />
-      <section className="border-2 border-green-800 flex-[8]">
+      <section className="border-2 border-green-800 w-[100%]">
         <h1 className="text-3xl text-white text-center">Administration</h1>   
       </section>     
     </div>
