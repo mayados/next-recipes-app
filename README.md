@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Next App Recipes
 
-First, run the development server:
+Is an application of recipes where you can also find a blog part with articles.
+This is an exrcice made during my training, allowing me to learn and use NextJs, TypeScript, React, MongoDb.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Dark mode
+- creation / modification / deletion of recipes
+-  creation / modification / deletion of article (Blog)
+-  creation / deletion of comment (Blog and Recipe)
+- consult latest recipes
+- consult recipes by category
+- Put a recipe in favorite
+- Download a recipe
+- Upload an image (recipe -> using Cloudinary)
+- Sign in (using Clerk)
+- Log in (using Clerk)
+- modify our profile (using Clerk)
+- consult your own recipes and recipes put in favorite 
+- search for a recipe
+- pagination
+- dashboard admin (manage recipes, ingredients, tags, articles, comments)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Technologies and tools
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- React : Version 18 
+- TypeScript : 5
+- MongoDB : Version 6.9.0.
+- Next.js : Version 14.2.15.
+- Clerk : 6.02
+- Cloudinary : version 6.15.0.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Author
+
+- [@mayados](https://www.github.com/mayados)
