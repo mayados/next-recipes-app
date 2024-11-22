@@ -2,11 +2,12 @@
 
 import AdminNav from "@/components/AdminNav";
 import { useEffect, useState } from "react";
-import { Trash2 } from 'lucide-react';
+import { Trash2, SendHorizontal } from 'lucide-react';
 import Button from "@/components/Button";
 import toast, { Toaster } from 'react-hot-toast';
 import { Dialog, DialogTitle, DialogPanel, Description } from '@headlessui/react';
-
+import {Input} from '@headlessui/react';
+import { slugify } from "@/lib/utils";
 
 const Categories = () =>{
 
@@ -59,7 +60,7 @@ const Categories = () =>{
 
     const deleteCategory = async (categoryId: string) => {
         try {
-            const response = await fetch(`/api/admin/blog/categories/delete/${categoryId}`, {
+            const response = await fetch(`/api/admin/categories/delete/${categoryId}`, {
                 method: "DELETE",
             });
             if (response.ok) {
@@ -92,17 +93,18 @@ const Categories = () =>{
       <section>
             <h2>Create a category</h2>
             <form onSubmit={createCategory} className="flex flex-col gap-5 border-2 border-pink-600 mx-[20vh] mt-5 px-5 py-3 rounded-md">
+                <label htmlFor="category-title">Title</label>
                 <Input
                     type="text"
                     name="name"
-                    placeholder={newCategory.name}
+                    placeholder={newCategory.title}
                     onChange={(e) => {
                         // Adding values for name and slug properties
                         const name = e.target.value;
                         setnewCategory({
                             ...newCategory,
-                            title,
-                            slug: slugify(title) 
+                            title: name,
+                            slug: slugify(name) 
                         });
                     }}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
