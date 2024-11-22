@@ -31,7 +31,7 @@ export default function SearchInput({placeholder}: {placeholder: string}) {
 
     <>
         <section>
-          <div className='relative'>
+          <div className='relative inline-flex'>
             <input 
             className='w-[50vh] h-[2rem] rounded-md pl-[3rem] bg-slate-800'
               type="text" 
