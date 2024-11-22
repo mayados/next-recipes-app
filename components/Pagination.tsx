@@ -18,15 +18,15 @@ const Pagination:React.FC<PaginationProps> = ({page,maxPages,previousAction, nex
             <button 
             onClick={previousAction} 
             disabled={page === 1} 
-            className="px-4 py-2 bg-gray-700 text-white rounded-md"
+            className="px-4 py-2 bg-gray-700 hover:bg-pink-800 text-white rounded-md"
             >
             Previous
             </button>
-            <span className="text-white">Page {page} / {maxPages}</span>
+            <span className="text-white flex items-center">Page {page} / {maxPages}</span>
             <button 
             onClick={nextAction} 
             disabled={page >= maxPages}   
-            className="px-4 py-2 bg-gray-700 text-white rounded-md"
+            className={`px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-pink-800 `}
             >
             Next
             </button>
