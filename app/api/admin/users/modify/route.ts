@@ -10,46 +10,9 @@ export async function POST(req: NextRequest) {
     // verify if it's a File (as clerk expects)
     const userPicture = data.get('userPicture') as File | null; 
 
-    console.log("Received data:", { clerkUserId, userName, userMail, userMailId });
+    console.log("Received data:", { clerkUserId, userName, userMail, userMailId, userPicture });
 
     try {
-        // Update mail
-        const mail = await fetch(`https://api.clerk.dev/v1/email_addresses/${userMailId}`, {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email_address: userMail,  
-            }),
-        });
-
-        if (!mail.ok) {
-            const errorMessage = await mail.text();
-            throw new Error(`Error updating email: ${errorMessage}`);
-        }
-
-        const newMail = await mail.json();
-        console.log("Updated email:", newMail);
-
-        // Update username
-        const usernameResponse = await fetch(`https://api.clerk.dev/v1/users/${clerkUserId}`, {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username: userName }),
-        });
-
-        if (!usernameResponse.ok) {
-            const errorMessage = await usernameResponse.text();
-            throw new Error(`Error updating username: ${errorMessage}`);
-        }
-
-        const newUserName = await usernameResponse.json();
-        console.log("Updated username:", newUserName);
 
         // update userPicture
         let profileImageUrl = null;
@@ -81,6 +44,47 @@ export async function POST(req: NextRequest) {
                 }
             }
         }
+
+        // Update mail
+        const mail = await fetch(`https://api.clerk.dev/v1/email_addresses/${userMailId}`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email_address: userMail, 
+                "verified": true,
+                "primary": true 
+            }),
+        });
+
+        if (!mail.ok) {
+            const errorMessage = await mail.text();
+            throw new Error(`Error updating email: ${errorMessage}`);
+        }
+
+        const newMail = await mail.json();
+        console.log("Updated email:", newMail);
+
+        // Update username
+        const usernameResponse = await fetch(`https://api.clerk.dev/v1/users/${clerkUserId}`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username: userName }),
+        });
+
+        if (!usernameResponse.ok) {
+            const errorMessage = await usernameResponse.text();
+            throw new Error(`Error updating username: ${errorMessage}`);
+        }
+
+        const newUserName = await usernameResponse.json();
+        console.log("Updated username:", newUserName);
+
 
         return NextResponse.json(
             {
