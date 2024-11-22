@@ -73,42 +73,33 @@ const Profile = () => {
         setIsOpen(false);  
     };
 
+
     if (loading) return <p>Loading profile...</p>;
 
     return (
         <div className='relative'>
             <div><Toaster/></div>
-            <section className='flex gap-5 items-center p-2 rounded-md bg-gray-700'>
-                <Image
-                    src={user.profileImageUrl || `https://res.cloudinary.com/${cloudName}/image/upload/icon-7359529_640_zfkjaw.jpg`}
-                    width={'100'}
-                    height={'100'}
-                    alt={user.username}
-                    className="rounded-[50%]"
-                />   
-                <div>
-                    <div className='flex items-center gap-3'>
-                        <h1>{capitalizeFirstLetter(user?.username) }</h1>
-                        <LinkButton label="Edit profile" icon={UserPen} path="/recipes" dynamicPath="" />                        
+            <h1 className='text-center'>My recipes and activities</h1>
+            <section className='flex tems-center justify-center text-center'>
+                <div className='flex gap-5 items-center justify-center p-2 rounded-md bg-gray-700'>
+                    <div>
+                        <p>Recipes</p>
+                        <p>{recipes.length}</p>
                     </div>
-                    <div className='flex text-center gap-3'>
-                        <div>
-                            <p>Recipes</p>
-                            <p>{recipes.length}</p>
-                        </div>
-                        <div>
-                            <p>Comments</p>
-                            <p>{comments.length}</p>
-                        </div>
-                        <div>
-                            <p>Favorites</p>
-                            <p>{favorites.length}</p>
-                        </div>
+                    <div>
+                        <p>Comments</p>
+                        <p>{comments.length}</p>
                     </div>
+                    <div>
+                        <p>Favorites</p>
+                        <p>{favorites.length}</p>
+                    </div>                    
                 </div>
+
             </section>
             <section className='my-5'>
                 <Title label="My recipes" icon={BookText}  />
+                <p>uu</p>
                 <div className='flex flex-wrap gap-5'>
                     {
                         recipes.map((recipe) => (
