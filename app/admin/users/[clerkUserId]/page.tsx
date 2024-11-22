@@ -147,6 +147,7 @@ const UserDetails = ({params}: {params: {clerkUserId: string}}) => {
             console.log(updatedDatas.newPicture)
             setUserMail(updatedDatas.newMail)
             console.log(updatedDatas.newMail)
+            console.log("La nouvelle adresse est :"+updatedDatas.newMail['email_address'])
 
           }
 
