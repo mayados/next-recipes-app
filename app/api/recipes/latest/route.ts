@@ -13,7 +13,7 @@ export async function GET() {
                 category: true
             },
             // Retrieve the number of recipes wanted
-            take: 5,
+            take: 10,
         })
 
         return NextResponse.json(recipes)
