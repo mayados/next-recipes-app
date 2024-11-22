@@ -66,33 +66,33 @@ const maxPages = Math.ceil(
 
       <LinkButton label="Create a recipe" icon={BadgePlus} path="/recipes/create" dynamicPath=""   />
         
-      <TabGroup className="ml-3 my-3">
-        <TabList className="ml-3 my-3 flex gap-3">
+      <TabGroup className="flex flex-col items-center lg:block my-3">
+        <TabList className="my-3 flex gap-3">
           <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md" onClick={() => { setCurrentCategory("all"); setPage(1); }}>All</Tab>
           <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md" onClick={() => { setCurrentCategory("starter"); setPage(1); }}>Starter</Tab>
           <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md" onClick={() => { setCurrentCategory("main"); setPage(1); }}>Main</Tab>
           <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md" onClick={() => { setCurrentCategory("dessert"); setPage(1); }}>Dessert</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel className="flex flex-row gap-5 px-3">
+          <TabPanel className="flex flex-row gap-5 flex-wrap justify-center lg:justify-between">
             {
               recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} isHealthy={recipe.isHealthy} IsVegan={recipe.IsVegan} difficultyLevel={recipe.difficulty} />         
             ))}   
           </TabPanel>
-          <TabPanel className="flex flex-row gap-5 px-3">
+          <TabPanel className="flex flex-row gap-5 flex-wrap justify-center lg:justify-between">
             {
               starters.map((starter) => (
               <RecipeCard key={starter.id} recipe={starter} categoryName={starter.category.title} isHealthy={starter.isHealthy} IsVegan={starter.IsVegan} difficultyLevel={starter.difficulty} />         
             ))}   
           </TabPanel>
-          <TabPanel className="flex flex-row gap-5 px-3">
+          <TabPanel className="flex flex-row gap-5 flex-wrap justify-center lg:justify-between">
             {
               mains.map((main) => (
               <RecipeCard key={main.id} recipe={main} categoryName={main.category.title} isHealthy={main.isHealthy} IsVegan={main.IsVegan} difficultyLevel={main.difficulty} />         
             ))}   
           </TabPanel>
-          <TabPanel className="flex flex-row gap-5 px-3">
+          <TabPanel className="flex flex-row gap-5 flex-wrap justify-center lg:justify-between">
             {
               desserts.map((dessert) => (
               <RecipeCard key={dessert.id} recipe={dessert} categoryName={dessert.category.title} isHealthy={dessert.isHealthy} IsVegan={dessert.IsVegan} difficultyLevel={dessert.difficulty} />         
@@ -100,7 +100,8 @@ const maxPages = Math.ceil(
           </TabPanel>
         </TabPanels>
       </TabGroup>
-      <Pagination previousAction={() => handlePageChange(page - 1)} nextAction={() => handlePageChange(page + 1)} page={page} maxPages={maxPages} />
+      <Pagination previousAction={() => handlePageChange(page - 1)} nextAction={() => handlePageChange(page + 1)} page={page} maxPages={maxPages} />      
+
     </>
 
   )
