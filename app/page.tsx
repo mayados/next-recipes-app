@@ -33,7 +33,7 @@ export default function Home() {
     <>
         <h1 className="text-3xl text-white text-center">Latest Recipes</h1>
         <Swiper
-                slidesPerView={3}
+                slidesPerView={5}
                 spaceBetween={30}
                 cssMode={true}
                 navigation={true}
