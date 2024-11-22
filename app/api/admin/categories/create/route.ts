@@ -6,9 +6,9 @@ export async function POST(req: NextRequest) {
 
     try {
         // Verifying if the tool already exists
-        const existingCategory = await db.tool.findFirst({
+        const existingCategory = await db.category.findFirst({
             where: {
-                title: title*
+                title: title
             }
         });
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Creation of the new tool if it doesn't exists
-        const newCategory = await db.tool.create({
+        const newCategory = await db.category.create({
             data: {
                 title: title,
                 slug: slug,
