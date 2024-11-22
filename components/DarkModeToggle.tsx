@@ -15,18 +15,31 @@ const DarkModeToggle = () => {
       onChange={darkMode.toggle}
       checkedIcon={
         <div
-          style={{ display: "flex", alignItems: "center", marginTop: "1.5px" }}
+          style={{ 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+          }}
         >
-          <Moon fill="white" />
+          <Moon fill="white" size={15} />
         </div>
       }
       uncheckedIcon={
         <div
-          style={{ display: "flex", alignItems: "center", marginTop: "2px" }}
+          style={{ 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+          }}
         >
-          <Sun fill="yellow" />
+          <Sun fill="yellow" size={15} />
         </div>
       }
+      handleDiameter={20}
+      // backGround color of the switch when dark mode is applied
+      onColor="db2777"  
     />
   );
 };
