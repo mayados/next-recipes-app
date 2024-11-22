@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import {
   ClerkProvider,
 } from '@clerk/nextjs';
@@ -34,9 +35,10 @@ export default function RootLayout({
         <ClerkProvider>
           <UserProvider>
             <Nav logo="MyRecipes" />
-            <main className="w-screen p-5">
+            <main className="w-screen p-5 max-w-full">
               {children}
             </main>
+            <Footer />
           </UserProvider>
         </ClerkProvider>
       </body>
