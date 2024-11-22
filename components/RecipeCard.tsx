@@ -8,6 +8,7 @@ import LinkButton from './LinkButton';
 import { Leaf } from 'lucide-react';
 import { HeartPulse } from 'lucide-react';
 import { Timer } from 'lucide-react';
+import { truncateText } from '@/lib/utils';
 
 
 interface RecipeCardProps{
@@ -147,7 +148,7 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
           {topIcons}
         </div>
         <div className='p-3 text-left'>
-          <h2 className='text-xl font-bold mb-3'>{recipe.title}</h2>
+          <h2 className='text-xl font-bold mb-3'>{truncateText(recipe.title,20)}</h2>
           <CategoryTag categoryName={categoryName} />
           <p className='text-sm text-slate-300 flex mb-3'><Timer />{recipe.timePreparation} min.</p>
           <ul className='flex flex-wrap gap-2'>
