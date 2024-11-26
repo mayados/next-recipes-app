@@ -7,6 +7,7 @@ import {
   ClerkProvider,
 } from '@clerk/nextjs';
 import { UserProvider } from '@/components/UserProvider';
+import { ThemeProvider } from 'next-themes';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,13 +32,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="bg-gray-100 text-gray-900">
+      <body className="bg-gray-100">
         <ClerkProvider>
           <UserProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark">
             <Nav logo="MyRecipes" />
-            <main className="w-screen p-5 max-w-full">
+            <main className="w-screen p-5 max-w-full dark:bg-darkBackground">
               {children}
             </main>
+          </ThemeProvider>
             <Footer />
           </UserProvider>
         </ClerkProvider>
