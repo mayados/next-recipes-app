@@ -38,7 +38,7 @@ const handlePageChange = (newPage) => {
   return (
     <>
         <h1 className='mb-3 text-center text-2xl my-5'>Blog</h1>
-        <section className='px-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+        <section className='px-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 min-h-[90vh]'>
           {/* Liste des articles */}
           {
             articles.map((article) => (

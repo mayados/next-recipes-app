@@ -133,7 +133,7 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
   const topIcons = displayTopIcons(isHealthy, IsVegan);
 
   return (
-    <div className='group border-slate-700 border-2 rounded-md w-[250px] '>
+    <div className='group border-slate-700 border-2 rounded-md w-[250px] bg-slate-900'>
         <div className='relative'>
           <CldImage
                 alt={recipe.title}
