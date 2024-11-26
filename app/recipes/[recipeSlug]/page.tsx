@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, FormEvent } from "react";
-import { Clock9, Key } from 'lucide-react';
+import { Clock9, Key, ShoppingBasket } from 'lucide-react';
 import { Gauge } from 'lucide-react';
 import CategoryTag from "@/components/CategoryTag";
 import CommentForm from "@/components/CommentForm";
@@ -34,6 +34,7 @@ import Link from "next/link";
 import DownloadPdf from "@/components/DownloadPdf";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from 'react-hot-toast';
+import DOMPurify from 'dompurify';
 
 
 
@@ -265,7 +266,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     
     <div className="p-5">
         <div><Toaster/></div>
-        <section className="lg:w-screen flex flex-col lg:flex-row h-[50vh] bg-gray-800 mt-5">
+        <section className="flex flex-col lg:flex-row h-[50vh] bg-gray-800 mt-5">
             {/* Basic informations */}
             <div className="lg:flex-1 flex flex-col h-[50vh] items-center justify-center lg:h-full">
                 <h1 className="text-center mb-3 text-4xl">{recipe?.title}</h1>
@@ -310,20 +311,20 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                 <TabGroup className="rounded-md border-2 border-gray-600">
                     <TabList className="bg-gray-600 p-2 flex gap-3">
                         <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
-                            <Gauge /> Ingrédients
+                            Ingrédients
                         </Tab>
                         <Tab className="text-lg lg:text-base flex data-[selected]:bg-pink-600  data-[hover]:bg-pink-500 p-2 rounded-md">
-                            <Gauge /> Tools
+                            Tools
                         </Tab>
                     </TabList>
                     <TabPanels>
                         {/* Content of Tab1 => Ingredients */}
-                        <TabPanel className="flex flex-wrap gap-3 px-2">
+                        <TabPanel className="flex justify-evenly flex-wrap gap-3 px-2">
                         {
                             compositions.map((composition) => (
-                                <div key={composition.id} className="mt-4 flex flex-col items-center text-center w-2/12">
+                                <div key={composition.id} className="mt-4 flex flex-col items-center text-center">
                                     <Image
-                                        className="h-[100%] w-[100%] object-cover"
+                                        className="h-[100px] w-[100px] object-cover"
                                         src={`${composition.ingredient.picture}`}
                                         width={500}
                                         height={500}
@@ -339,9 +340,9 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                         <TabPanel className="flex flex-wrap gap-3 px-2">
                             {
                             recipetools.map((tools) => (
-                                <div className="mt-4 flex flex-col items-center text-center w-2/12">
+                                <div className="mt-4 flex flex-col items-center text-center">
                                     <Image
-                                        className="h-[100%] w-[100%] object-cover"
+                                        className="h-[100px] w-[100px] object-cover"
                                         src={`${tools.tool.picture}`}
                                         width={500}
                                         height={500}
@@ -364,21 +365,28 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                 slidesPerView={2}
                 spaceBetween={30}
                 cssMode={true}
-                navigation={true}
-                pagination={true}
-                mousewheel={true}
-                keyboard={true}
-                modules={[Navigation, Pagination, Mousewheel, Keyboard]}
-                className="mySwiper"
-            >
-                {
-                steps.map((step) => (
-                    <SwiperSlide>
-                        <Step text={step.text} number={step.number} />
+                pagination={{ clickable: true }}  // Enable pagination bullets and make them clickable
+                mousewheel={true}  // Allow mousewheel navigation
+                keyboard={true}    // Allow keyboard navigation
+                grabCursor={true}  // Enable grab cursor functionality
+                modules={[Pagination, Mousewheel, Keyboard]}  // Include necessary modules
+                className="mySwiperRecipePage"
+                breakpoints={{
+                    // Display fewer slides on smaller screens
+                    320: { slidesPerView: 1 },
+                    640: { slidesPerView: 1 },
+                    1024: { slidesPerView: 2 },
+                    1280: { slidesPerView: 2 },
+                  }}
+                >
+                {steps.map((step) => (
+                    <SwiperSlide key={step.number} className="h-[90vh] bg-neutral-600">
+                    <Step text={step.text} number={step.number} />
                     </SwiperSlide>
-                    ))                      
-                }  
+                ))}
             </Swiper>
+
+
 
         </section>
         {/* Comments about the recipe */}
@@ -398,7 +406,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         {/* Suggestions */}
         <section className="mt-5">
             <Title label="Suggestions" icon={Lightbulb} />
-            <div className="flex justify-start gap-5 mt-5">
+            <div className="flex justify-center flex-wrap lg:justify-start gap-5 mt-5">
                 {
                     suggestions?.map((suggestion) => (
                         <article key={suggestion.id} className='w-[200px] group border-slate-700 border-2 rounded-md'>
