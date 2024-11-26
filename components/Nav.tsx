@@ -10,9 +10,11 @@ import {
   useSession
 } from '@clerk/nextjs'
 import { checkUserRole } from '../lib/utils';
-import DarkModeToggle from './DarkModeToggle';
 import { CookingPot, Menu, X } from 'lucide-react';
 import Link from 'next/link';
+import ThemeTogggle from '@/components/ThemeToggle';
+
+
 
 
 
@@ -85,8 +87,9 @@ const Nav:React.FC<NavProps> = ({ logo}) => {
             />
           </UserButton.MenuItems>
         </UserButton>
-      </SignedIn>      
-      <DarkModeToggle />         
+      </SignedIn>    
+      <ThemeTogggle />
+  
     </ul>
   </nav>
   )
