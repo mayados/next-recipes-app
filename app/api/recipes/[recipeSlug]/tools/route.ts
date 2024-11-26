@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { redirect } from 'next/navigation'
 
 
 // Asynchrone : il attend une promesse
