@@ -31,10 +31,10 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-3xl text-white">Latest Recipes</h1>
+      <h1 className="text-3xl text-black dark:text-white">Latest Recipes</h1>
       <div className="flex flex-col items-center justify-center min-h-[80vh]">
         <Swiper
-          className = "bg-slate-900 swiper-container"
+          className = "swiper-container"
           effect="coverflow"
           grabCursor={true}
           centeredSlides={true}
