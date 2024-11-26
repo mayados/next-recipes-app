@@ -56,10 +56,10 @@ const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
       return(
         <>
           <li><Gauge className='text-green-600' /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>        
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300' /></li>        
         </>
 
       )
@@ -69,9 +69,9 @@ const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
         <>
           <li><Gauge className='text-green-600' /></li>
           <li><Gauge className='text-green-600' /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>        
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300'/></li>        
         </>
 
       )
@@ -82,8 +82,8 @@ const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
           <li><Gauge className='text-orange-600' /></li>
           <li><Gauge className='text-orange-600' /></li>
           <li><Gauge className='text-orange-600' /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>        
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300' /></li>        
         </>
 
       )
@@ -95,7 +95,7 @@ const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
           <li><Gauge className='text-orange-800' /></li>
           <li><Gauge className='text-orange-800' /></li>
           <li><Gauge className='text-orange-800' /></li>
-          <li><Gauge /></li>        
+          <li><Gauge className='text-slate-300' /></li>        
         </>
 
       )
@@ -115,11 +115,11 @@ const displayDifficultyLevel =  (difficultyLevel: number | undefined)  => {
     default:
       return(
         <>
-          <li><Gauge /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>
-          <li><Gauge /></li>        
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300' /></li>
+          <li><Gauge className='text-slate-300'/></li>
+          <li><Gauge className='text-slate-300'/></li>
+          <li><Gauge className='text-slate-300'/></li>        
         </>
 
       )
@@ -148,9 +148,9 @@ const RecipeCard:React.FC<RecipeCardProps> = ({ recipe, categoryName, difficulty
           {topIcons}
         </div>
         <div className='p-3 text-left'>
-          <h2 className='text-xl font-bold mb-3'>{truncateText(recipe.title,20)}</h2>
+          <h2 className='text-xl font-bold mb-3 text-slate-300'>{truncateText(recipe.title,20)}</h2>
           <CategoryTag categoryName={categoryName} />
-          <p className='text-sm text-slate-300 flex mb-3'><Timer />{recipe.timePreparation} min.</p>
+          <p className='text-sm  flex mb-3 text-slate-300'><Timer />{recipe.timePreparation} min.</p>
           <ul className='flex flex-wrap gap-2'>
               {difficulty}
           </ul>

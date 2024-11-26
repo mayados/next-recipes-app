@@ -9,7 +9,7 @@ const Tag:React.FC<TagProps> = ({name}) => {
     <span 
         className='px-3 py-2 text-xs rounded-full bg-pink-600 group-hover:bg-blue-400'
     >
-        {name}
+      <p className='text-slate-300'>{name}</p>  
     </span>
   )
 }

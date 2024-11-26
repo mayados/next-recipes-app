@@ -24,7 +24,7 @@ const CategoryTag: React.FC<CategoryTagProps> = ({ categoryName }) => {
 
   return (
     <div className={`py-1 px-2 inline-block ${color} rounded-md mb-3`}>
-      <p>{categoryName}</p>
+      <p className='text-slate-300'>{categoryName}</p>
     </div>
   );
 };
