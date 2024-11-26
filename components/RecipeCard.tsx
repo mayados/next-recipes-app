@@ -1,5 +1,4 @@
 import React from 'react'
-import Image from "next/image";
 import {CldImage} from "next-cloudinary";
 import { Gauge } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';

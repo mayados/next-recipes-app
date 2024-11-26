@@ -1,6 +1,4 @@
 import React, { FormEvent } from 'react'
-// On importe le type LucideIcon pour pouvoir faire passer l'icone voulue
-import {LucideIcon} from 'lucide-react'
 import { Field, Textarea } from '@headlessui/react';
 import Button from './Button';
 import { SendHorizontal } from 'lucide-react';

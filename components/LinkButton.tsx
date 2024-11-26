@@ -2,14 +2,12 @@ import React from 'react'
 // On importe le type LucideIcon pour pouvoir faire passer l'icone voulue
 import {LucideIcon} from 'lucide-react'
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
 
 interface LinkButtonProps {
   label:string;
   icon: LucideIcon;
   actionButton?: () => void;
-  path: any
+  path: string;
   dynamicPath?: string
 }
 

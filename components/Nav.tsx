@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState } from 'react'
-import Image from "next/image";
 import {
   SignInButton,
   SignedIn,
@@ -19,7 +18,7 @@ import ThemeTogggle from '@/components/ThemeToggle';
 
 
 interface NavProps{
-  logo: String;
+  logo: string;
 }
 
 
