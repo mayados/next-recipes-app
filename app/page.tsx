@@ -10,7 +10,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './swiper.css';
 // import required modules
-import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
+import { Navigation, Pagination, Mousewheel, Keyboard, EffectCoverflow } from 'swiper/modules';
 
 export default function Home() {
 
@@ -31,25 +31,42 @@ export default function Home() {
 
   return (
     <>
-        <h1 className="text-3xl text-white text-center">Latest Recipes</h1>
+      <h1 className="text-3xl text-white">Latest Recipes</h1>
+      <div className="flex flex-col items-center justify-center min-h-[80vh]">
         <Swiper
-                slidesPerView={5}
-                spaceBetween={30}
-                cssMode={true}
-                navigation={true}
-                pagination={true}
-                mousewheel={true}
-                keyboard={true}
-                modules={[Navigation, Pagination, Mousewheel, Keyboard]}
-                className="swiperLatest md:mt-10"
-            >        
-          {
-            recipes.map((recipe) => (
-              <SwiperSlide>
-                <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} difficultyLevel={recipe.difficulty} isHealthy={recipe.isHealthy} IsVegan={recipe.IsVegan} />         
+          className = "bg-slate-900 swiper-container"
+          effect="coverflow"
+          grabCursor={true}
+          centeredSlides={true}
+          initialSlide={3} // Start at the 4th card
+          slidesPerView={5} // Show 5 slides at a time
+          spaceBetween={-50} // Adjust spacing between slides for the overlapping effect
+          coverflowEffect={{
+            rotate: 0,
+            stretch: -10, // Adjust to control overlap
+            depth: 150, // Controls the 3D depth effect
+            modifier: 1,
+            slideShadows: true,
+          }}
+          navigation={true}
+          modules={[Navigation, EffectCoverflow]}
+          breakpoints={{
+            // Display fewer slides on smaller screens
+            320: { slidesPerView: 1, spaceBetween: 10 },
+            640: { slidesPerView: 2, spaceBetween: 20 },
+            1024: { slidesPerView: 3, spaceBetween: 30 },
+            1280: { slidesPerView: 5, spaceBetween: -50 },
+          }}
+        >
+          {recipes.map((recipe, index) => (
+            <SwiperSlide key={index} className="w-80 h-[400px] overflow-hidden">
+                  <RecipeCard key={recipe.id} recipe={recipe} categoryName={recipe.category.title} difficultyLevel={recipe.difficulty} isHealthy={recipe.isHealthy} IsVegan={recipe.IsVegan} />         
+
             </SwiperSlide>
-           ))}          
+          ))}
         </Swiper>
+      </div>
+
     </>
   )
 }
