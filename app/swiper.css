@@ -2,13 +2,18 @@
     width: 100%;
     height: 100%;
   }
+
+
+  .mySwiperRecipePage{
+    height: 80vh;
+  } 
+  .mySwiperRecipePage .swiper-slide{
+    height: 90%;
+  }
   
   .swiper-slide {
-    height: 90vh;
     text-align: center;
-    font-size: 18px;
-    background: #3d3d3d;
-  
+    font-size: 18px;  
     /* Center slide text vertically */
     display: flex;
     justify-content: center;
@@ -32,6 +37,9 @@
     color: #db2777;
     background-color: #db2777;
   }
+
+  /* Undisplay vertical shadow lines when property slideShadows is set to true */
+  
 
 
   
