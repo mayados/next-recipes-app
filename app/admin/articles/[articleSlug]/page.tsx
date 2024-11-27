@@ -12,9 +12,7 @@ const ModifyArticle = ({ params }: { params: { articleSlug: string } }) => {
     const [article, setArticle] = useState<ArticleWithTagsAndComments | null>(null);
     const [title, setTitle] = useState("");
     const [text, setText] = useState("");
-    const [comments, setComments] = useState<[]>([]);
     const [tags, setTags] = useState<TagArticleType[]>([]);
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const router = useRouter();
 
     useEffect(() => {
@@ -143,10 +141,10 @@ const ModifyArticle = ({ params }: { params: { articleSlug: string } }) => {
                             onChange={(event) => handleTagChange(index, event)}
                             className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                         />
-                        <Button label="Remove tag" icon={CircleX} type="button" action={() => removeTag(index)} className="text-red-500" />
+                        <Button label="Remove tag" icon={CircleX} type="button" action={() => removeTag(index)} specifyBackground="text-red-500" />
                     </div>
                 ))}
-                <Button label="Add tag" icon={CirclePlus} type="button" action={addTag} className="text-red-500" />
+                <Button label="Add tag" icon={CirclePlus} type="button" action={addTag} specifyBackground="text-red-500" />
 
                 <Button icon={SendHorizontal} label="Send" specifyBackground="" type="submit" />
             </form>
