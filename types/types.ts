@@ -124,6 +124,7 @@ interface TagArticleType{
     id?: string;
     // Ici c'est du chaînage : on réfère le type TagType comme type de la propriété tag de cette interface
     tag: TagType;
+    number?: number;
 }
 
 interface TagArticleTypeSimplified{
