@@ -10,25 +10,20 @@ import { useRouter } from "next/navigation";
 import { CircleX } from 'lucide-react';
 import { CirclePlus } from 'lucide-react';
 import { useUser } from "@clerk/nextjs";
-import cloudinary from "@/lib/cloudinary"; 
 
 
 export default function CreateRecipe() {
 
     const { user } = useUser();
     // console.log("Informations sur le user : "+user?.username)
-    const [image, setImage] = useState(null);
-    const [imageUrl, setImageUrl] = useState("");
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const isHealthyChoices = ["Yes","No"];
     const isVeganChoices = ["Yes","No"];
     const difficultyChoices = ["1","2","3","4","5"];
-    const [selectedHealthyChoice, setSelectedHealthyChoice] = useState(isHealthyChoices[0])
-    const [selectedVeganChoice, setSelectedVeganChoice] = useState(isVeganChoices[0])
-    const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyChoices[0])
-    // For the preview of an image, when it's uploaded
-    const [imagePreviews, setImagePreviews] = useState([]);
+    // const [selectedHealthyChoice, setSelectedHealthyChoice] = useState(isHealthyChoices[0])
+    // const [selectedVeganChoice, setSelectedVeganChoice] = useState(isVeganChoices[0])
+    // const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyChoices[0])
     const [ingredientSuggestions, setIngredientSuggestions] = useState([]); // Pour stocker les suggestions
     const [toolSuggestions, setToolSuggestions] = useState([]); // Pour stocker les suggestions
 

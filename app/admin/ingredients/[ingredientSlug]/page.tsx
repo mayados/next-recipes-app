@@ -19,7 +19,7 @@ const Ingredient = ({params}: {params: {ingredientSlug: string}}) => {
     useEffect(() => {
         const fetchIngredient = async () => {
             const response = await fetch(`/api/admin/ingredients/${params.ingredientSlug}`)
-            const data: IngredientType = await response.json()
+            const data: OnlyIngredientType = await response.json()
             setIngredient(data['ingredient'])
         }
         fetchIngredient()

@@ -1,7 +1,6 @@
 // On transforme notre page en composant client et non plus serveur. Il faut faire ainsi car nous importons un composant qui a besoin de useEffect, il faut donc que l'un de ses parents soit marqué avec "use client"
 "use client"
 import ArticleCard from '@/components/ArticleCard'
-import CustomedLink from '@/components/CustomedLink'
 import Pagination from '@/components/Pagination'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'

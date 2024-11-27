@@ -1,7 +1,5 @@
 "use client"
 
-import Title from '@/components/Title'
-import { formatDate } from '@/lib/utils'
 import { convertMillisecondsToDate } from '@/lib/utils'
 import { useEffect, useState, FormEvent } from "react";
 import { capitalizeFirstLetter } from '@/lib/utils'
@@ -9,7 +7,7 @@ import Image from 'next/image'
 import { Ban, CookingPot, SendHorizontal, MessageCircle } from 'lucide-react';
 import Button from '@/components/Button';
 import toast, { Toaster } from 'react-hot-toast';
-import { Field, Textarea, Label, Legend, Radio, RadioGroup, Fieldset, Input, Select  } from '@headlessui/react';
+import { Field, Input  } from '@headlessui/react';
 
 
 const UserDetails = ({params}: {params: {clerkUserId: string}}) => {

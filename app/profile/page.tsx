@@ -1,12 +1,9 @@
 'use client'
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useAuthUser } from '@/components/UserProvider';
 import  LinkButton  from '@/components/LinkButton';
 import  Title  from '@/components/Title';
-import { capitalizeFirstLetter } from '@/lib/utils';
-import { UserPen, Heart, BookText, CircleX, Pen } from 'lucide-react';
+import { Heart, BookText, CircleX, Pen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import RecipeCard from '@/components/RecipeCard';
 import Button from '@/components/Button';

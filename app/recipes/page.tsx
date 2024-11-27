@@ -2,7 +2,6 @@
 
 import RecipeCard from "@/components/RecipeCard";
 import LinkButton from "@/components/LinkButton";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { BadgePlus } from 'lucide-react';

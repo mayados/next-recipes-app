@@ -1,10 +1,9 @@
 "use client";
 
 import AdminNav from "@/components/AdminNav";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Eye, SendHorizontal, Trash2 } from 'lucide-react';
-import { formatDate, slugify } from '@/lib/utils'
+import { SendHorizontal, Trash2 } from 'lucide-react';
+import { slugify } from '@/lib/utils'
 import Image from "next/image";
 import Button from "@/components/Button";
 import toast, { Toaster } from 'react-hot-toast';

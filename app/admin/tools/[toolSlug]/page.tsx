@@ -19,7 +19,7 @@ const Tool = ({params}: {params: {toolSlug: string}}) => {
     useEffect(() => {
         const fetchTool = async () => {
             const response = await fetch(`/api/admin/tools/${params.toolSlug}`)
-            const data: ToolType = await response.json()
+            const data: OnlyToolType = await response.json()
             setTool(data['tool'])
         }
         fetchTool()

@@ -17,8 +17,7 @@ import { CookingPot } from 'lucide-react';
 import { GitFork } from 'lucide-react';
 import { Lightbulb } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
-import { SendHorizontal } from 'lucide-react';
-import { Field, Label, Tab, TabGroup, TabList, TabPanel, TabPanels, Textarea } from '@headlessui/react'
+import {  Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { MessageSquareQuote } from 'lucide-react';
 // Import Swiper styles
@@ -27,14 +26,12 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.css';
 // import required modules
-import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
+import { Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 import Comment from "@/components/Comment";
-import { json } from "stream/consumers";
 import Link from "next/link";
 import DownloadPdf from "@/components/DownloadPdf";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from 'react-hot-toast';
-import DOMPurify from 'dompurify';
 
 
 

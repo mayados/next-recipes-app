@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState, FormEvent } from "react";
 import Button from "@/components/Button";
 import { CircleX, SendHorizontal, CirclePlus } from 'lucide-react';
 import { Field, Textarea, Label, Legend, Radio, RadioGroup, Fieldset, Input, Select  } from '@headlessui/react';
 // import required modules
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from 'react-hot-toast';
 import { slugify } from "@/lib/utils";

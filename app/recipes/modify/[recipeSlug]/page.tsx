@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState, FormEvent } from "react";
 import Button from "@/components/Button";
 import { CircleX, SendHorizontal, CirclePlus } from 'lucide-react';
 import { Field, Textarea, Label, Legend, Radio, RadioGroup, Fieldset, Input, Select  } from '@headlessui/react';
 // import required modules
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from 'react-hot-toast';
 import { slugify } from "@/lib/utils";
@@ -60,7 +58,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         const fetchRecipe = async () => {
             // Back quotes because dynamical parameter
             const response = await fetch(`/api/recipes/${params.recipeSlug}`)
-            const data: RecipeType = await response.json()
+            const data: OnlyRecipeType = await response.json()
             // Hydrating the recipe with retrieved datas
             setRecipe(data['recipe'])
             setTitle(data['recipe'].title)

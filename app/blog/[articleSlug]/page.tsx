@@ -2,7 +2,6 @@
 import Comment from '@/components/Comment'
 import Tag from '@/components/Tag'
 import Title from '@/components/Title'
-import { formatDate } from '@/lib/utils'
 import { useEffect, useState, FormEvent } from "react";
 import { BookText } from 'lucide-react';
 import Image from 'next/image'

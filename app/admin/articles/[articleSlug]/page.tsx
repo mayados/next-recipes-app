@@ -1,12 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState, FormEvent } from "react";
 import Button from "@/components/Button";
 import { CircleX, SendHorizontal, CirclePlus } from 'lucide-react';
-import { Field, Textarea, Label, Legend, Radio, RadioGroup, Fieldset, Input, Select } from '@headlessui/react';
-import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { Field, Textarea, Input } from '@headlessui/react';
 import toast, { Toaster } from 'react-hot-toast';
 import { slugify } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -81,7 +78,7 @@ const ModifyArticle = ({ params }: { params: { articleSlug: string } }) => {
     const addTag = () => {
         setTags((prevTags) => [
             ...prevTags,
-            { tag: { name: "" }, number: prevTags.length + 1 }
+            { tag: { name: "" }, number: prevTags.length + 1, }
         ]);
     };
 
