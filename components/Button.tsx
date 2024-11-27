@@ -12,7 +12,7 @@ interface ButtonProps {
   type?:  "submit" | "reset" | "button" | undefined;
 }
 
-const findBackgroundColor =  (specifyBackground)  => {
+const findBackgroundColor =  (specifyBackground: string)  => {
   if(specifyBackground === "none"){
     return "";
   } else{
