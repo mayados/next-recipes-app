@@ -44,6 +44,15 @@ interface ToolType{
     composition: CompositionType;
 }
 
+interface OnlyToolType{
+    tool: ToolType;
+}
+
+
+interface OnlyIngredientType{
+    ingredient: IngredientType;
+}
+
 interface IngredientType{
     id: String;
     label: String;
@@ -77,6 +86,10 @@ interface RecipeType{
     comment: CommentType[];
 }
 
+interface OnlyRecipeType{
+    recipe: RecipeType;
+}
+
 interface ArticleWithTagsAndComments{
     id: string;
     title: string;
@@ -108,13 +121,17 @@ interface ArticleType{
 }
 
 interface TagArticleType{
-    id: string;
+    id?: string;
     // Ici c'est du chaînage : on réfère le type TagType comme type de la propriété tag de cette interface
     tag: TagType;
 }
 
+interface TagArticleTypeSimplified{
+    tag: TagType;
+}
+
 interface TagType{
-    id: string;
+    id?: string;
     name: string;
 }
 
