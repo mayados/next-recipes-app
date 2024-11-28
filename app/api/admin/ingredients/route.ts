@@ -15,7 +15,13 @@ export async function GET(req: NextRequest) {
             take: resultsPerPage,
         })
 
-        return NextResponse.json(ingredients)
+        const totalIngredients = await db.ingredient.count(); 
+
+
+        return NextResponse.json({
+            ingredients: ingredients,
+            totalIngredients: totalIngredients,
+        })
 
     } catch (error) {
         console.log("[INGREDIENTS]", error)

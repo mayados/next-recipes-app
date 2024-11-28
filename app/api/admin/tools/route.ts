@@ -15,7 +15,13 @@ export async function GET(req: NextRequest) {
             take: resultsPerPage,
         })
 
-        return NextResponse.json(tools)
+        const totalTools = await db.tool.count(); 
+
+
+        return NextResponse.json({
+            tools: tools,
+            totalTools: totalTools,
+        })
 
     } catch (error) {
         console.log("[TOOLS]", error)
