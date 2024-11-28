@@ -225,3 +225,9 @@ interface CommentRecipe{
     createdAt: Date;
     user: UserType;
 }
+
+// type defined to avoid UploadResponse of type unknown in the API
+interface CloudinaryResponse {
+    secure_url: string;
+    public_id: string;
+  }

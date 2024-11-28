@@ -50,7 +50,7 @@ export async function PUT(req: NextRequest) {
     
     if (steps) {
       await db.step.deleteMany({ where: { recipeId: updatedRecipe.id } });
-      const newSteps = steps.map((step) => ({
+      const newSteps = steps.map((step: StepType) => ({
         text: step.text,
         number: step.number,
         recipeId: updatedRecipe.id,
@@ -76,11 +76,12 @@ export async function PUT(req: NextRequest) {
         }
       
         // prepare datas for createMany
-        const newCompositions = ingredients.map((composition) => ({
-          quantity: parseFloat(composition.quantity),
+        const newCompositions = ingredients.map((composition: CompositionType) => ({
+          quantity: composition.quantity,
           unit: composition.unit,
           recipeId: updatedRecipe.id,
-          ingredientId: composition.ingredientId,
+          ingredientId: composition?.ingredient?.id,
+          // ingredientId: composition.ingredientId,
         }));
       
         await db.composition.createMany({ data: newCompositions });
@@ -102,9 +103,10 @@ export async function PUT(req: NextRequest) {
           });
         }
       
-        const newTools = tools.map((recipeTool) => ({
+        const newTools = tools.map((recipeTool: RecipeToolType) => ({
           recipeId: updatedRecipe.id,
-          toolId: recipeTool.toolId, 
+          toolId: recipeTool.tool?.id, 
+          // toolId: recipeTool.toolId, 
         }));
       
         await db.recipeTool.createMany({ data: newTools });
@@ -114,6 +116,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ message: "Recipe updated successfully", updatedRecipe }, { status: 200 });
   } catch (error) {
     console.error("Error with recipe's update:", error);
-    return NextResponse.json({ message: "Error updating the recipe", error: error.message }, { status: 500 });
+    return new NextResponse("Internal error, {status: 500}")
+
   }
 }

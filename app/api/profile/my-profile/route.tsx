@@ -5,6 +5,10 @@ import { getAuth } from '@clerk/nextjs/server'
 export async function GET(req: NextRequest)
 {
     const { userId } = getAuth(req)
+    if (!userId) {
+        // 401 : missing or invalid authentication : the user has the permissions
+        return new NextResponse("User not authenticated", { status: 401 });
+    }
 
 
     try{

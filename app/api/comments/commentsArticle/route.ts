@@ -57,7 +57,6 @@ export async function POST(req: NextRequest)
     } catch (error) {
         // servor side : SSR
         console.log("[DATA]", error)
-        console.log(comment)
 
         return new NextResponse("Internal error, {status: 500}")
     }

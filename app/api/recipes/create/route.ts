@@ -43,11 +43,11 @@ export async function POST(req: NextRequest) {
         });
 
 
-        const recipeSteps = steps.map(async (step) => {
+        const recipeSteps = steps.map(async (step: StepType) => {
             await db.step.create({
                 data: {
                     text: String(step.text),
-                    number: parseInt(step.number),
+                    number: step.number,
                     recipeId: recipe.id,
                 },
             });
@@ -55,17 +55,17 @@ export async function POST(req: NextRequest) {
 
 
         const ingredientEntries = await Promise.all(
-            ingredients.map(async (ingredient) => {
+            ingredients.map(async (ingredient: IngredientType) => {
                 let existingIngredient = await db.ingredient.findUnique({
-                    where: { label: ingredient.name }
+                    where: { label: ingredient.label }
                 });
 
                 // Create ingredient if it doesn't exist
                 if (!existingIngredient) {
                     existingIngredient = await db.ingredient.create({
                         data: {
-                            label: String(ingredient.name),
-                            slug: ingredient.slug,  // Enregistre le slug sans vérification d'unicité
+                            label: String(ingredient.label),
+                            slug: ingredient.slug || "slug-null", 
                             picture: ingredient.picture || "https://res.cloudinary.com/dsq38bxum/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg",
                         },
                     });
@@ -73,8 +73,8 @@ export async function POST(req: NextRequest) {
                 
                 return {
                     ingredientId: existingIngredient.id,
-                    unit: String(ingredient.unity),
-                    quantity: parseInt(ingredient.quantity),
+                    unit: String(ingredient.unit),
+                    quantity: ingredient.quantity,
                 };
             })
         );
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
             });
         });
 
-        const toolPromises = tools.map(async (tool) => {
+        const toolPromises = tools.map(async (tool: ToolType) => {
             let existingTool = await db.tool.findUnique({
                 where: { label: tool.label }
             });

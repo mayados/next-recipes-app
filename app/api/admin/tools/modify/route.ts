@@ -22,6 +22,7 @@ export async function PUT(req: NextRequest) {
 
   } catch (error) {
     console.error("Error with tool's update:", error);
-    return NextResponse.json({ message: "Error updating the tool", error: error.message }, { status: 500 });
+    return new NextResponse("Error updating the tool, {status: 500}")
+
   }
 }

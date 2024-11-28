@@ -97,9 +97,6 @@ export async function POST(req: NextRequest) {
         );
     } catch (error) {
         console.error("Error with user's update:", error);
-        return NextResponse.json(
-            { message: "Error updating the user", error: error.message },
-            { status: 500 }
-        );
+        return new NextResponse("Error updating the ingredient", {status: 500})
     }
 }

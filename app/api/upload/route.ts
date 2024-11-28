@@ -26,14 +26,14 @@ export async function POST(request: Request) {
     const readableStream = Readable.from(buffer);
 
     // Upload of the file to Cloudinary
-    const uploadResponse = await new Promise((resolve, reject) => {
+    const uploadResponse = await new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { upload_preset: 'app_recipes_pictures' },
         (error, result) => {
           if (error) {
             reject(error); 
           } else {
-            resolve(result);  
+            resolve(result as CloudinaryResponse);  
           }
         }
       );
@@ -44,6 +44,7 @@ export async function POST(request: Request) {
 
     // Return url from uploaded image
     return NextResponse.json({ url: uploadResponse.secure_url }, { status: 200 });
+    // return NextResponse.json({ url: uploadResponse.secure_url }, { status: 200 });
 
   } catch (error) {
     console.error("Error with image's upload:", error);
