@@ -14,7 +14,7 @@ interface UserType{
 }
 
 interface StepType{
-    id: string;
+    id?: string;
     text: string;
     number: number;
 }
@@ -27,13 +27,14 @@ interface CategoryType{
 
 
 interface CompositionType{
-    id: string;
-    ingredient : IngredientType;
-    recipe: RecipeType;
-    unit: string;
-    quantity: number;
-    tool: ToolType;
+    id?: string;
+    ingredient ?: IngredientType;
+    recipe?: RecipeType;
+    unit?: string;
+    quantity?: string;
+    tool?: ToolType;
     picture: string;
+    slug?: string;
 }
 
 interface ToolType{
@@ -48,34 +49,47 @@ interface OnlyToolType{
     tool: ToolType;
 }
 
+interface ToolsTypeWithTotal{
+    tools: ToolType[];
+    totalTools?: number;
+}
 
 interface OnlyIngredientType{
     ingredient: IngredientType;
 }
 
 interface IngredientType{
-    id: String;
-    label: String;
-    unit: String;
-    picture: String;
+    id: string;
+    label: string;
+    unit: string;
+    picture: string;
     quantity: number;
     composition: CompositionType;
+    slug?: string;
+}
+
+interface IngredientsTypeWithTotal{
+    ingredients: IngredientType[];
+    totalIngredients?: number;
 }
 
 interface RecipeToolType{
-    recipe: RecipeType;
-    tool: ToolType;
+    recipe?: RecipeType;
+    tool?: ToolType;
+    label?: string;
+    slug?: string;
 }
 
 interface RecipeType{
     id: string;
     title: string;
     timePreparation: number;
-    instructions:    String
-    picture:         String
+    instructions:    string
+    picture:         string
     difficulty: number;
     isHealthy: boolean;
     IsVegan: boolean;
+    user ?: UserType;
     createdAt: Date;
     categoryId: string;
     category: CategoryType;
