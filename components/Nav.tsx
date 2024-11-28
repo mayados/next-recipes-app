@@ -66,8 +66,11 @@ const Nav:React.FC<NavProps> = ({ logo}) => {
       <SignedOut>
         <li><Link className={`lg:hover:text-pink-600 ${isOpen ? 'hover:none' : 'hover:text-pink-600'}`} href={`/recipes`}>Recipes</Link></li>                    
         <li><Link className='lg:hover:text-pink-600' href={`/search`}>Search</Link></li>                    
-        <li><Link className='lg:hover:text-pink-600' href={`/blog`}>Blog</Link></li>                    
-        <SignInButton className='lg:hover:text-pink-600' />
+        <li><Link className='lg:hover:text-pink-600' href={`/blog`}>Blog</Link></li>  
+        <div className="lg:hover:text-pink-600">
+          <SignInButton />
+        </div>                  
+        {/* <SignInButton className='lg:hover:text-pink-600' /> */}
       </SignedOut>
       
       <SignedIn>

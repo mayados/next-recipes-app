@@ -42,7 +42,7 @@ const generatePDF = (objectReference: RecipeType, filename: string) => {
     doc.text('Ingredients:', 20, yOffset);
     yOffset +=10;
     objectReference['compositions'].forEach((ingredient) => {
-      doc.text(`- ${ingredient['ingredient']['label']}`, 20, yOffset);
+      doc.text(`- ${ingredient?.ingredient?.label}`, 20, yOffset);
       yOffset += 10;
     });
     yOffset += 20;
@@ -51,7 +51,7 @@ const generatePDF = (objectReference: RecipeType, filename: string) => {
     doc.text('Tools:',20 , yOffset);
     yOffset += 10;
     objectReference['recipetools'].forEach((tool: RecipeToolType) => {
-      doc.text(`- ${tool['tool']['label']}`, 20, yOffset);
+      doc.text(`- ${tool?.tool?.label}`, 20, yOffset);
       yOffset += 10;
     });
     yOffset += 20;

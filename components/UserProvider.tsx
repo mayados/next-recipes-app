@@ -2,14 +2,23 @@
 
 import { createContext, useEffect, useState, useContext } from 'react';
 import { useUser } from '@clerk/nextjs';
+// import type { User } from '@clerk/nextjs/server';
+import { UserResource } from "@clerk/types";
 
-const UserContext = createContext(null);
+const UserContext = createContext<UserResource | null>(null); // Context can be UserResource or null
+// const UserContext = createContext(null);
 
 export const useAuthUser = () => useContext(UserContext);
 
-export const UserProvider = ({ children }) => {
+interface UserProviderProps{
+    children: React.ReactNode;
+}
+
+
+export const UserProvider = ({ children }: UserProviderProps) => {
     const { user, isLoaded } = useUser(); // Ajout de isLoaded pour suivre le chargement
-    const [authUser, setAuthUser] = useState(null);
+    const [authUser, setAuthUser] = useState<UserResource| null>(null); // Initialize state with UserResource or null
+    // const [authUser, setAuthUser] = useState(null);
 
     useEffect(() => {
         if (isLoaded && user) {
