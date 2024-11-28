@@ -73,6 +73,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ message: "Article updated successfully", updatedArticle }, { status: 200 });
   } catch (error) {
     console.error("Error with article's update:", error);
-    return NextResponse.json({ message: "Error updating the article", error: error.message }, { status: 500 });
+    return new NextResponse("Error updating the article, {status: 500}")
+
   }
 }

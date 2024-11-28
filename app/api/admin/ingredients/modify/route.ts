@@ -23,6 +23,6 @@ export async function PUT(req: NextRequest) {
 
   } catch (error) {
     console.error("Error with ingredient's update:", error);
-    return NextResponse.json({ message: "Error updating the ingredient", error: error.message }, { status: 500 });
+    return new NextResponse("Error updating the ingredient, {status: 500}")
   }
 }
