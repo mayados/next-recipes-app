@@ -85,7 +85,7 @@ const CommentArticles = () =>{
                             <td>{formatDate(comment.createdAt)}</td>
                             <td>{comment.user.pseudo}</td>
                             <td>
-                            <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(commentId)} className="text-red-500" />
+                            <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(commentId)} specifyBackground="text-red-500" />
                             </td>
                         </tr>
                     );

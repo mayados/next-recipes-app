@@ -11,6 +11,7 @@ import { Dialog, DialogTitle, DialogPanel, Description } from '@headlessui/react
 import {Input} from '@headlessui/react';
 import { ImageUp } from 'lucide-react';
 import LinkButton from "@/components/LinkButton";
+import Pagination from "@/components/Pagination";
 
 
 
@@ -19,23 +20,32 @@ const Tools = () =>{
     const [tools, settools] = useState<ToolType[]>([])
     const [ToolToDelete, setToolToDelete] = useState<string | null>(null); 
     let [isOpen, setIsOpen] = useState(false);
+    const resultsPerPage = 10; 
+    const [totalTools, setTotalTools] = useState<number | null>()
+    const [page, setPage] = useState(1);
     const [picturePreview, setPicturePreview] = useState<string | null>(null); 
-    const [newTool, setnewTool] = useState({
+    const [newTool, setnewTool] = useState<{
+        name: string;
+        picture: File | string;  
+        slug: string;
+    }>({
         name: "",
-        picture: "",
+        picture: "",  
         slug: "",
-    })
+    });
+    
 
     useEffect(() => {
         const fetchtools = async () => {
-          const response = await fetch(`/api/admin/tools`)
-          const data: ToolType[] =  await response.json()
-          settools(data)
+          const response = await fetch(`/api/admin/tools?page=${page}&resultsPerPage=${resultsPerPage}`)
+          const data: ToolsTypeWithTotal =  await response.json()
+          settools(data.tools)
+          setTotalTools(data.totalTools)
     
         }
     
         fetchtools()
-      },[]);
+      },[page]);
 
       tools.map((tool) => (
         
@@ -67,7 +77,7 @@ const Tools = () =>{
         setIsOpen(false);  
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
     
@@ -102,7 +112,7 @@ const Tools = () =>{
         return null;  
     };
 
-    const createTool = async (e) => {
+    const createTool = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
 
         try {
@@ -136,6 +146,13 @@ const Tools = () =>{
         }
     };
 
+    const maxPages = Math.ceil((totalTools || 0) / resultsPerPage );
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= maxPages) {
+          setPage(newPage);
+        }
+      };
 
   return (
 
@@ -210,7 +227,7 @@ const Tools = () =>{
                             <LinkButton label="Modify picture" icon={ImageUp} path="/admin/tools/" dynamicPath={tool?.slug} />                        
                         </td>
                         <td>
-                            <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(toolId)} className="text-red-500" />
+                            <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(toolId)} specifyBackground="text-red-500" />
                         </td>
                     </tr>
                 );
@@ -219,6 +236,7 @@ const Tools = () =>{
             </tbody>
             </table>  
         </section>
+        <Pagination previousAction={() => handlePageChange(page - 1)} nextAction={() => handlePageChange(page + 1)} page={page} maxPages={maxPages} />
       </div> 
         {/* Delete tool Dialog */}
         {isOpen && ToolToDelete && (

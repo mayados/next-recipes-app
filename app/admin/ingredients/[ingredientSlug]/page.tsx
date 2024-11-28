@@ -12,8 +12,8 @@ const Ingredient = ({params}: {params: {ingredientSlug: string}}) => {
 
 
     const [ingredient, setIngredient] = useState<IngredientType | null>(null)
-    const [picturePreview, setPicturePreview] = useState<string | null>(null); 
-    const [newPicture, setNewPicture] = useState<string | null>(null); 
+    const [picturePreview, setPicturePreview] = useState<string | null >(null); 
+    const [newPicture, setNewPicture] = useState<string | null | File>(null); 
 
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const Ingredient = ({params}: {params: {ingredientSlug: string}}) => {
         // useEffect re-called if the ingredientSlug changes
     }, [params.ingredientSlug])
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement> ) => {
         const file = e.target.files?.[0];
         if (!file) return;
     
@@ -57,7 +57,7 @@ const Ingredient = ({params}: {params: {ingredientSlug: string}}) => {
         return null;  
     };
 
-    const modifyIngredient = async (e) => {
+    const modifyIngredient = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
 
         try {
@@ -98,10 +98,12 @@ const Ingredient = ({params}: {params: {ingredientSlug: string}}) => {
         <section className="w-screen mt-5">
             <h1>{ingredient?.label}</h1>
             <Image
-                src={ingredient?.picture }
-                width={'100'}
-                height={'100'}
-                alt={ingredient?.label || "ingredient"}
+                // Throws an error if not converted to primitive string with .toString()
+                src={(ingredient?.picture || "/default-image.jpg").toString()}
+                width={100}
+                height={100}
+                // Throws an error if not converted to primitive string with .toString()
+                alt={(ingredient?.label || "ingredient").toString()}
                 className="rounded-md"
             />  
             <form onSubmit={modifyIngredient} className="flex flex-col gap-5 border-2 border-pink-600 mx-[20vh] mt-5 px-5 py-3 rounded-md">

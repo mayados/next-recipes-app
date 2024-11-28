@@ -10,6 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Dialog, DialogTitle, DialogPanel, Description } from '@headlessui/react';
 import {  Input  } from '@headlessui/react';
 import LinkButton from "@/components/LinkButton";
+import Pagination from "@/components/Pagination";
 
 
 
@@ -17,24 +18,32 @@ const Ingredients = () =>{
 
     const [ingredients, setIngredients] = useState<IngredientType[]>([])
     const [ingredientToDelete, setIngredientToDelete] = useState<string | null>(null); 
+    const resultsPerPage = 10; 
+    const [totalIngredients, setTotalIngredients] = useState<number | null>()
+    const [page, setPage] = useState(1);
     let [isOpen, setIsOpen] = useState(false);
     const [picturePreview, setPicturePreview] = useState<string | null>(null); 
-    const [newIngredient, setNewIngredient] = useState({
+    const [newIngredient, setNewIngredient] = useState<{
+        name: string;
+        picture: File | string; 
+        slug: string;
+    }>({
         name: "",
         picture: "",
         slug: "",
-    })
+    });
+    
 
     useEffect(() => {
         const fetchIngredients = async () => {
-          const response = await fetch(`/api/admin/ingredients`)
-          const data: IngredientType[] =  await response.json()
-          setIngredients(data)
-    
+          const response = await fetch(`/api/admin/ingredients?page=${page}&resultsPerPage=${resultsPerPage}`)
+          const data: IngredientsTypeWithTotal =  await response.json()
+          setIngredients(data.ingredients)
+          setTotalIngredients(data.totalIngredients)    
         }
     
         fetchIngredients()
-      },[]);
+      },[page]);
 
       ingredients.map((ingredient) => (
         
@@ -58,7 +67,7 @@ const Ingredients = () =>{
     }
 
     const openDeleteDialog = (ingredientId: string) => {
-        setIngredientToDelete(tagId);
+        setIngredientToDelete(ingredientId);
         setIsOpen(true);  
     };
 
@@ -66,7 +75,7 @@ const Ingredients = () =>{
         setIsOpen(false);  
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
     
@@ -101,7 +110,7 @@ const Ingredients = () =>{
         return null;  
     };
 
-    const createIngredient = async (e) => {
+    const createIngredient = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
 
         try {
@@ -135,6 +144,14 @@ const Ingredients = () =>{
         }
     };
 
+    const maxPages = Math.ceil((totalIngredients || 0) / resultsPerPage );
+    console.log("Le nombre de pages est : "+maxPages)
+  
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= maxPages) {
+      setPage(newPage);
+    }
+  };
 
   return (
 
@@ -198,10 +215,10 @@ const Ingredients = () =>{
                         </td>
                         <td>
                             <Image
-                                src={ingredient.picture }
+                                src={(ingredient.picture || "/default-picture").toString() }
                                 width={'100'}
                                 height={'100'}
-                                alt={ingredient.label}
+                                alt={(ingredient.label || "ingrédient").toString()}
                                 className="rounded-md"
                             />   
                         </td>
@@ -209,7 +226,7 @@ const Ingredients = () =>{
                             <LinkButton label="Modify picture" icon={ImageUp} path="/admin/ingredients/" dynamicPath={ingredient?.slug} />                        
                         </td>
                         <td>
-                            <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(ingredientId)} className="text-red-500" />
+                            <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog((ingredientId).toString())} specifyBackground="text-red-500" />
                         </td>
                     </tr>
                 );
@@ -218,6 +235,7 @@ const Ingredients = () =>{
             </tbody>
             </table>  
         </section>
+        <Pagination previousAction={() => handlePageChange(page - 1)} nextAction={() => handlePageChange(page + 1)} page={page} maxPages={maxPages} />
       </div> 
         {/* Delete ingredient Dialog */}
         {isOpen && ingredientToDelete && (

@@ -58,7 +58,7 @@ const Recipes = () =>{
                 <tr key={recipe.id}>
                     <td>{recipe.title}</td>
                     <td>{formatDate(recipe.createdAt)}</td>
-                    <td>{recipe.user.pseudo}</td>
+                    <td>{recipe?.user?.pseudo}</td>
                     <td>
                     <Link href={`/admin/recipes/${recipeSlug}`}>
                     <Eye />

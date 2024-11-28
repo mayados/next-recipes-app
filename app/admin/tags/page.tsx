@@ -29,7 +29,7 @@ const Tags = () =>{
         fetchTags()
     },[]);
 
-    const createTag = async (e) => {
+    const createTag = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
 
         try {
@@ -123,13 +123,13 @@ const Tags = () =>{
                     <tbody>
                     {
                         tags.map((tag) => {
-                            const tagId = tag.id;
+                            const tagId =  tag.id ?? ''
                         
                         return (
                             <tr key={tag.id}>
                                 <td>{tag.name}</td>
                                 <td>
-                                    <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(tagId)} className="text-red-500" />
+                                    <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(tagId)} specifyBackground="text-red-500" />
                                 </td>
                             </tr>
                         );

@@ -30,7 +30,7 @@ const Categories = () =>{
         fetchCategories()
     },[]);
 
-    const createCategory = async (e) => {
+    const createCategory = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
 
         try {
@@ -92,7 +92,7 @@ const Categories = () =>{
       <AdminNav />
       <section>
             <h2>Create a category</h2>
-            <form onSubmit={createCategory} className="flex flex-col gap-5 border-2 border-pink-600 mx-[20vh] mt-5 px-5 py-3 rounded-md">
+            <form onSubmit= {createCategory} className="flex flex-col gap-5 border-2 border-pink-600 mx-[20vh] mt-5 px-5 py-3 rounded-md">
                 <label htmlFor="category-title">Title</label>
                 <Input
                     type="text"
@@ -132,7 +132,7 @@ const Categories = () =>{
                             <td>{category.title}</td>
                             <td>{category.slug}</td>
                             <td>
-                                <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(categoryId)} className="text-red-500" />
+                                <Button label="Remove" icon={Trash2} type="button" action={() => openDeleteDialog(categoryId)} specifyBackground="text-red-500" />
                             </td>
                         </tr>
                     );

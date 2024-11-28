@@ -20,7 +20,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     const [title, setTitle] = useState("");
     const [pictureUrl, setPictureUrl] = useState("");
     const [difficulty, setDifficulty] = useState("");
-    const [preparationTime, setPreparationTime] = useState("");
+    const [preparationTime, setPreparationTime] = useState<number | string>("");
     const [isVegan, setIsVegan] = useState("");
     const [picture, setPicture] = useState("");
     const [isHealthy, setIsHealthy] = useState("");
@@ -32,7 +32,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     const isVeganChoices = ["Yes","No"];
     const difficultyChoices = ["1","2","3","4","5"];
     const [selectedCategory, setSelectedCategory] = useState("");
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState<CategoryType[]>([]);
 
 
 
@@ -58,15 +58,15 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         const fetchRecipe = async () => {
             // Back quotes because dynamical parameter
             const response = await fetch(`/api/recipes/${params.recipeSlug}`)
-            const data: RecipeType = await response.json()
+            const data: OnlyRecipeType = await response.json()
             // Hydrating the recipe with retrieved datas
             setRecipe(data['recipe'])
             setTitle(data['recipe'].title)
-            setPicture(data['recipe'].picture)
+            setPicture((data['recipe'].picture).toString())
             setPreparationTime(data['recipe'].timePreparation)
             setSelectedCategory(data['recipe'].category.title)
             setDifficulty(String(data['recipe'].difficulty))
-            setInstructions(data['recipe'].instructions)
+            setInstructions((data['recipe'].instructions).toString())
             setIngredients(data['recipe'].compositions)
             setIsHealthy(data['recipe'].isHealthy ? "Yes" : "No");
             setIsVegan(data['recipe'].IsVegan ? "Yes" : "No");
@@ -79,8 +79,9 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         // useEffect re-called if the recipeSlug changes
     }, [params.recipeSlug])
 
-    const modifyRecipe = async (e) => {
+    const modifyRecipe = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
+        console.log("le temps de préparation est : "+preparationTime)
         try{
             const uploadRecipeImage = async () => {
                 const file = picture; 
@@ -193,7 +194,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     };
 
     // remove an ingredient
-    const removeIngredient = (index) => {
+    const removeIngredient = (index: number) => {
         setIngredients((prevIngredients) => {
             const newIngredients = prevIngredients
                 .filter((_, i) => i !== index) 
@@ -223,7 +224,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         ]);
     };
 
-    const removeTool = (index) => {
+    const removeTool = (index: number) => {
         setTools((prevTools) => {
             const newTools = prevTools
                 .filter((_, i) => i !== index) 
@@ -285,7 +286,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 <Legend>Is the dish Healthy ?</Legend>
                 <RadioGroup 
                     value={isHealthy}
-                    onChange={(e)=> setIsHealthy<(e.target.value)}
+                    onChange={(value)=> setIsHealthy(value)}
 
                 >
                     {isHealthyChoices.map((choice) => (
@@ -300,7 +301,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 <Legend>Is the dish vegan ?</Legend>
                 <RadioGroup 
                        value={isVegan}
-                       onChange={(e)=> setIsVegan<(e.target.value)}
+                       onChange={(value)=> setIsVegan(value)}
                 >
                     {isVeganChoices.map((choice) => (
                         <Field key={choice} className="flex gap-2 items-center">
@@ -314,7 +315,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 <Legend>Difficulty</Legend>
                 <RadioGroup className="flex gap-2"
                     value={difficulty}
-                    onChange={(e)=> setDifficulty<(e.target.value)}
+                    onChange={(value)=> setDifficulty(value)}
 
                 >
                     {difficultyChoices.map((choice) => (
@@ -373,7 +374,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                     type="text"
                     name="name"
                     placeholder="Ingredient name"
-                    value={ingredient.ingredient?.label || ""} 
+                    value={(ingredient.ingredient?.label || "").toString()} 
                     onChange={(event) => handleIngredientChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />

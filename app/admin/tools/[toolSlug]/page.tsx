@@ -26,7 +26,7 @@ const Tool = ({params}: {params: {toolSlug: string}}) => {
         // useEffect re-called if the toolSlug changes
     }, [params.toolSlug])
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<any>) => {
         const file = e.target.files?.[0];
         if (!file) return;
     
@@ -57,7 +57,7 @@ const Tool = ({params}: {params: {toolSlug: string}}) => {
         return null;  
     };
 
-    const modifyTool = async (e) => {
+    const modifyTool = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
 
         try {
@@ -98,7 +98,7 @@ const Tool = ({params}: {params: {toolSlug: string}}) => {
         <section className="w-screen mt-5">
             <h1>{tool?.label}</h1>
             <Image
-                src={tool?.picture }
+                src={(tool?.picture  || "/default-image").toString()}
                 width={'100'}
                 height={'100'}
                 alt={tool?.label || "tool"}
