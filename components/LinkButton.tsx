@@ -8,7 +8,7 @@ interface LinkButtonProps {
   icon: LucideIcon;
   actionButton?: () => void;
   path: string;
-  dynamicPath?: string
+  dynamicPath?: string | String
 }
 
 const LinkButton:React.FC<LinkButtonProps> = ({label, icon: Icon, actionButton, path, dynamicPath}) => {
