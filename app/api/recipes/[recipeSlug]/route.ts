@@ -7,6 +7,11 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
     const { recipeSlug } = params;
     const { userId } = getAuth(req)
 
+    if (!userId) {
+        // 401 : missing or invalid authentication : the user has the permissions
+        return new NextResponse("User not authenticated", { status: 401 });
+    }
+
 
     try{
 
@@ -67,7 +72,7 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
                 //       data: {
                 //         clerkUserId: userId,
                 //         mail: email,
-                //         pseudo: pseudo,
+                //         pseudo: getAuth(pseudo),
                 //         picture: "",
                 //       },
                 //     });
@@ -75,7 +80,7 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
 
 
         console.log("L'id de l'utilisateur"+dbUser?.id)
-        console.log("L'id de la recette"+recipe.id)
+        // console.log("L'id de la recette"+recipe.id)
         const favorite = await db.favorite.findFirst({
             // Multiple conditions, because we want te recipeId and userId to match
             where: {

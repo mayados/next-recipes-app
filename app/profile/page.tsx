@@ -12,14 +12,14 @@ import { Dialog, DialogTitle, DialogPanel, Description } from '@headlessui/react
 
 const Profile = () => {
     // Retrieve user from react context
-    const user = useAuthUser(); 
+    // Forcing typage of `user` to a  type which has an `id` property to avoid eslint error
+    const user = useAuthUser() as { id: string } | null; 
     const [recipes, setRecipes] = useState<RecipeType[]>([]);
     const [favorites, setFavorites] = useState<RecipeType[]>([]);
     const [comments, setComments] = useState<[]>([]);
     const [loading, setLoading] = useState(true);
     let [isOpen, setIsOpen] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState<string | null>(null); 
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
 
     // Retrieve all the recipes and favorites
