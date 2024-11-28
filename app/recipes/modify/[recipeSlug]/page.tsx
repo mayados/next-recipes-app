@@ -20,9 +20,9 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     const [title, setTitle] = useState("");
     const [pictureUrl, setPictureUrl] = useState("");
     const [difficulty, setDifficulty] = useState("");
-    const [preparationTime, setPreparationTime] = useState("");
+    const [preparationTime, setPreparationTime] = useState<string | number>("");
     const [isVegan, setIsVegan] = useState("");
-    const [picture, setPicture] = useState("");
+    const [picture, setPicture] = useState<File | string>("");
     const [isHealthy, setIsHealthy] = useState("");
     const [instructions, setInstructions] = useState("");
     const [tools, setTools] = useState<RecipeToolType[]>([]);
@@ -32,7 +32,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     const isVeganChoices = ["Yes","No"];
     const difficultyChoices = ["1","2","3","4","5"];
     const [selectedCategory, setSelectedCategory] = useState("");
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState<CategoryType[]>([]);
 
 
 
@@ -79,7 +79,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         // useEffect re-called if the recipeSlug changes
     }, [params.recipeSlug])
 
-    const modifyRecipe = async (e) => {
+    const modifyRecipe = async (e: React.MouseEvent<any>) => {
         e.preventDefault();
         try{
             const uploadRecipeImage = async () => {
@@ -128,7 +128,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         }
       };
 
-      const handleCategoryChange= (event) => {
+      const handleCategoryChange= (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value
         setSelectedCategory(value)
     }
@@ -148,7 +148,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         );
     };
 
-    const removeStep = (index) => {
+    const removeStep = (index: number) => {
         setSteps((prevSteps) => {
             const newSteps = prevSteps
                 .filter((_, i) => i !== index) 
@@ -161,7 +161,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     // INGREDIENTS
     const handleIngredientChange = (
             index: number, 
-            event
+            event: React.ChangeEvent<HTMLInputElement>
         ) => {
             const { name, value } = event.target;
         
@@ -189,7 +189,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     };
 
     // remove an ingredient
-    const removeIngredient = (index) => {
+    const removeIngredient = (index: number) => {
         setIngredients((prevIngredients) => {
             const newIngredients = prevIngredients
                 .filter((_, i) => i !== index) 
@@ -200,7 +200,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     };
 
     // TOOLS
-    const handleToolChange = (index: number, event) => {
+    const handleToolChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         const newTools = [...tools];
         newTools[index] = {
@@ -219,7 +219,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
         ]);
     };
 
-    const removeTool = (index) => {
+    const removeTool = (index: number) => {
         setTools((prevTools) => {
             const newTools = prevTools
                 .filter((_, i) => i !== index) 
@@ -230,7 +230,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
     };
 
     // Recipe picture change
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         // There is only one file to get each time
         const file = e.target.files?.[0];
         if (!file) return;
@@ -281,7 +281,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 <Legend>Is the dish Healthy ?</Legend>
                 <RadioGroup 
                     value={isHealthy}
-                    onChange={(e)=> setIsHealthy<(e.target.value)}
+                    onChange={(value)=> setIsHealthy(value)}
 
                 >
                     {isHealthyChoices.map((choice) => (
@@ -296,7 +296,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 <Legend>Is the dish vegan ?</Legend>
                 <RadioGroup 
                        value={isVegan}
-                       onChange={(e)=> setIsVegan<(e.target.value)}
+                       onChange={(value)=> setIsVegan(value)}
                 >
                     {isVeganChoices.map((choice) => (
                         <Field key={choice} className="flex gap-2 items-center">
@@ -310,7 +310,7 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 <Legend>Difficulty</Legend>
                 <RadioGroup className="flex gap-2"
                     value={difficulty}
-                    onChange={(e)=> setDifficulty<(e.target.value)}
+                    onChange={(value)=> setDifficulty(value)}
 
                 >
                     {difficultyChoices.map((choice) => (
@@ -341,10 +341,10 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                 type="file"
                 id="recipe-photo"
                 accept="image/*"
-                onChange={(e) => handleImageChange(e, "recipe")}
+                onChange={handleImageChange}
                 />
                 {pictureUrl && <img src={pictureUrl} alt="Aperçu de la recette" />}
-                {picture && <img src={picture} alt="Aperçu de la recette" />}
+                {picture && <img src={(picture).toString()} alt="Aperçu de la recette" />}
             </div> 
             <h2>Steps</h2>
             {steps.map((step, index) => (
@@ -358,10 +358,10 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                     onChange={(event) => handleStepChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <Button label="Remove step" icon={CircleX} type="button" action={() => removeStep(index)} className="text-red-500" />
+                <Button label="Remove step" icon={CircleX} type="button" action={() => removeStep(index)} specifyBackground="text-red-500" />
             </div>
             ))}
-            <Button label="Add step" icon={CirclePlus} type="button" action={() => addStep()} className="text-red-500" />
+            <Button label="Add step" icon={CirclePlus} type="button" action={() => addStep()} specifyBackground="text-red-500" />
             <h2>Ingredients</h2>
             {ingredients.map((ingredient, index) => (
             <div key={index}>
@@ -389,10 +389,10 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                     onChange={(event) => handleIngredientChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} className="text-red-500" />
+                <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} specifyBackground="text-red-500" />
             </div>
             ))}
-            <Button label="Add ingredient" icon={CirclePlus} type="button" action={() => addIngredient()} className="text-red-500" />
+            <Button label="Add ingredient" icon={CirclePlus} type="button" action={() => addIngredient()} specifyBackground="text-red-500" />
             <h2>Tools</h2>
             {tools.map((tool, index) => (
             <div key={index}>
@@ -404,10 +404,10 @@ const ModifyRecipe = ({params}: {params: {recipeSlug: string}}) => {
                     onChange={(event) => handleToolChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} className="text-red-500" />
+                <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} specifyBackground="text-red-500" />
             </div>
             ))}
-            <Button label="Add tool" icon={CirclePlus} type="button" action={() => addTool()} className="text-red-500" />
+            <Button label="Add tool" icon={CirclePlus} type="button" action={() => addTool()} specifyBackground="text-red-500" />
 
             <Button icon={SendHorizontal} label="Send" specifyBackground="" type="submit" />
         </form>  

@@ -47,7 +47,7 @@ const ArticleDetailPage = ({params}: {params: {articleSlug: string}}) => {
         }
       }
 
-      const handleCommentInputChange = (e: React.ChangeEvent) => {
+      const handleCommentInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment({ text: e.target.value });
     };
 

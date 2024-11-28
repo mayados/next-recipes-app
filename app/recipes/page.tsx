@@ -17,10 +17,10 @@ export default function Recipes() {
   const [starters, setStarters] = useState<RecipeType[]>([])
   const [mains, setMains] = useState<RecipeType[]>([])
   const [desserts, setDesserts] = useState<RecipeType[]>([])
-  const [totalRecipes, setTotalRecipes] = useState()
-  const [totalStarters, setTotalStarters] = useState()
-  const [totalMains, setTotalMains] = useState()
-  const [totalDesserts, setTotalDesserts] = useState()
+  const [totalRecipes, setTotalRecipes] = useState<number>(0)
+  const [totalStarters, setTotalStarters] = useState<number>(0)
+  const [totalMains, setTotalMains] = useState<number>(0)
+  const [totalDesserts, setTotalDesserts] = useState<number>(0)
   const [currentCategory, setCurrentCategory] = useState("all");
  
 
@@ -28,7 +28,7 @@ export default function Recipes() {
     const fetchRecipes = async () => {
       const response = await fetch(`/api/recipes?page=${page}&resultsPerPage=${resultsPerPage}`)
       // On type la constante data. De cette façon, si nous récupérons autre chose que la structure établie au départ, il y aura une erreur
-      const data: RecipeType[] =  await response.json()
+      const data: RecipesWithTotalAndCategories =  await response.json()
       // J'hydrate mon objet article avec les datas récupérés
       setRecipes(data['recipes'])
       setStarters(data['starters'])
@@ -52,7 +52,7 @@ const maxPages = Math.ceil(
   totalDesserts) / resultsPerPage
 );
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= maxPages) {
       setPage(newPage);
     }

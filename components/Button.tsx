@@ -8,7 +8,7 @@ interface ButtonProps {
   icon: LucideIcon;
   iconFill?: string ;
   specifyBackground: string;
-  action?: () => void | ((e: React.MouseEvent<HTMLButtonElement>) => void); 
+  action?: (e: React.MouseEvent<HTMLButtonElement>) => void; 
   type?:  "submit" | "reset" | "button" | undefined;
 }
 

@@ -11,7 +11,7 @@ interface CommentFormProps {
   name:string;
   placeholder: string;
   action?: (e: FormEvent) => void; 
-  onChange?: (e: React.ChangeEvent) => void; 
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; 
   type?: "submit" | "reset" | "button" | undefined;
   value?: string;
 }

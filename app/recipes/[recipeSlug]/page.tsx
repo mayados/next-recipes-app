@@ -44,7 +44,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [steps, setSteps] = useState<StepType[]>([]);
     const [comment, setComments] = useState<CommentType[]>([]);
     const [newComment, setNewComment] = useState({text: ""})
-    const [suggestions, setSuggestions] = useState<RecipeType | null>(null)
+    const [suggestions, setSuggestions] = useState<RecipeType[] | null>(null)
     // To manage the state between the recipe and user's favorites
     const [isFavorite, setIsFavorite] = useState<FavoriteType | null>(null)
 
@@ -56,7 +56,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         const fetchRecipe = async () => {
             // Back quotes because dynamical parameter
             const response = await fetch(`/api/recipes/${params.recipeSlug}`)
-            const data: RecipeType = await response.json()
+            const data: RecipeTypeWithAll = await response.json()
             // Hydrating the recipe with retrieved datas
             setRecipe(data['recipe'])
             // We set ingredients and tools
@@ -76,7 +76,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     }, [params.recipeSlug])
 
  
-    const addRecipeToFavorites = async (e: React.MouseEvent) => {
+    const addRecipeToFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         if(!user) return;
         try{
@@ -110,7 +110,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     }
 
 
-    const removeRecipeFromFavorites = async (e: React.MouseEvent,favoriteId: string) => {
+    const removeRecipeFromFavorites = async (e: React.MouseEvent<HTMLButtonElement>,favoriteId: string) => {
         if(!user) return;
         console.log(favoriteId)
         try {
@@ -221,7 +221,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
         }
     }
 
-    const handleCommentInputChange = (e: React.ChangeEvent) => {
+    const handleCommentInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment({ text: e.target.value });
     };
 
@@ -275,19 +275,40 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                     </ul>
                 </div>
                 <div className="flex gap-2 justify-center">
-                    <DownloadPdf icon={Download} label="Download" objectReference={recipe} filename={recipe?.slug} />
-                    {isFavorite ? (
-                    <Button icon={Heart} iconFill="red" label="Favorite" specifyBackground="" action={(e) => removeRecipeFromFavorites(e, isFavorite.id)} />
+                {recipe && (
+                    <>
+                        <DownloadPdf
+                        icon={Download}
+                        label="Download"
+                        objectReference={recipe}
+                        filename={recipe.slug || ""}
+                        />
+                        {isFavorite ? (
+                        <Button
+                            icon={Heart}
+                            iconFill="red"
+                            label="Favorite"
+                            specifyBackground=""
+                            action={(e) => removeRecipeFromFavorites(e, isFavorite.id)}
+                        />
+                        ) : (
+                        <Button
+                            icon={Heart}
+                            iconFill="none"
+                            label="Favorite"
+                            specifyBackground=""
+                            action={addRecipeToFavorites}
+                        />
+                        )}
+                    </>
+                    )}
 
-                ) : (
-                    <Button icon={Heart} iconFill="none" label="Favorite" specifyBackground="" action={(e) => addRecipeToFavorites(e)} />
-                )}
                 </div>
             </div>
             <div className="lg:flex-1">
                 <Image
                     className="h-[100%] w-[100%] object-cover"
-                    src={recipe?.picture}
+                    src={recipe?.picture || "/default-image"}
                     width={500}
                     height={500}
                     alt="Picture of the recipe"
@@ -322,12 +343,12 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                                 <div key={composition.id} className="mt-4 flex flex-col items-center text-center">
                                     <Image
                                         className="h-[100px] w-[100px] object-cover"
-                                        src={`${composition.ingredient.picture}`}
+                                        src={`${composition?.ingredient?.picture}`}
                                         width={500}
                                         height={500}
                                         alt="Picture of the ingredient"
                                     />                        
-                                    <p>{composition.ingredient.label}</p>                            
+                                    <p>{composition?.ingredient?.label}</p>                            
                                 </div>
         
                         ))                      
@@ -340,12 +361,12 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                                 <div className="mt-4 flex flex-col items-center text-center">
                                     <Image
                                         className="h-[100px] w-[100px] object-cover"
-                                        src={`${tools.tool.picture}`}
+                                        src={`${tools?.tool?.picture}`}
                                         width={500}
                                         height={500}
                                         alt="Picture of the tool"
                                     />                          
-                                    <p>{tools.tool.label}</p>                            
+                                    <p>{tools?.tool?.label}</p>                            
                                 </div>
         
                             ))                      
@@ -405,7 +426,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
             <Title label="Suggestions" icon={Lightbulb} />
             <div className="flex justify-center flex-wrap lg:justify-start gap-5 mt-5">
                 {
-                    suggestions?.map((suggestion) => (
+                    suggestions?.map((suggestion: RecipeType) => (
                         <article key={suggestion.id} className='w-[200px] group border-slate-700 border-2 rounded-md'>
                             <div>
                                 <Image

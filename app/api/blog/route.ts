@@ -17,15 +17,21 @@ export async function GET(req: NextRequest) {
             createdAt: 'desc'
             },
             include: {
-            tags: {
-                include: {
-                tag: true
+                tags: {
+                    include: {
+                    tag: true
+                    }
                 }
-            }
             }
         })
 
-        return NextResponse.json(articles)
+        const totalArticles = await db.article.count(); 
+
+
+        return NextResponse.json({
+            articles: articles,
+            totalArticles: totalArticles,
+        })
 
     } catch (error) {
         console.log("[ARTICLES]", error)

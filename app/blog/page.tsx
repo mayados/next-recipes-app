@@ -11,24 +11,25 @@ const Blog = () =>  {
     // current page (for pagination)
     const [page, setPage] = useState(1);
     const resultsPerPage = 10; 
-    const [totalArticles, setTotalArticles] = useState()
+    const [totalArticles, setTotalArticles] = useState<number | null>()
+
 
 
   useEffect(() => {
     const fetchArticles = async () => {
       const response = await fetch(`/api/blog?page=${page}&resultsPerPage=${resultsPerPage}`)
-      const data: ArticleWithTagsAndComments[] =  await response.json()
-      setArticles(data)
-      setTotalArticles(data.length)
+      const data: ArticlesTypeWithTotal =  await response.json()
+      setArticles(data.articles)
+      setTotalArticles(data.totalArticles)
     }
 
     fetchArticles()
   },[page]);
 
-  const maxPages = Math.ceil(totalArticles/ resultsPerPage);
+  const maxPages = Math.ceil((totalArticles || 0) / resultsPerPage);
   console.log("Le nombre de pages est : "+maxPages)
 
-const handlePageChange = (newPage) => {
+const handlePageChange = (newPage: number) => {
   if (newPage >= 1 && newPage <= maxPages) {
     setPage(newPage);
   }

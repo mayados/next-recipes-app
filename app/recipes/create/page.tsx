@@ -16,7 +16,7 @@ export default function CreateRecipe() {
 
     const { user } = useUser();
     // console.log("Informations sur le user : "+user?.username)
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState<CategoryType[]>([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const isHealthyChoices = ["Yes","No"];
     const isVeganChoices = ["Yes","No"];
@@ -24,13 +24,13 @@ export default function CreateRecipe() {
     // const [selectedHealthyChoice, setSelectedHealthyChoice] = useState(isHealthyChoices[0])
     // const [selectedVeganChoice, setSelectedVeganChoice] = useState(isVeganChoices[0])
     // const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyChoices[0])
-    const [ingredientSuggestions, setIngredientSuggestions] = useState([]); // Pour stocker les suggestions
-    const [toolSuggestions, setToolSuggestions] = useState([]); // Pour stocker les suggestions
+    const [ingredientSuggestions, setIngredientSuggestions] = useState<IngredientType[]>([]); // Pour stocker les suggestions
+    const [toolSuggestions, setToolSuggestions] = useState<ToolType[]>([]); // Pour stocker les suggestions
 
     
 
     // Because we have plenty of values to retrieve from the creation form : 
-    const [formValues, setFormValues] = useState({
+    const [formValues, setFormValues] = useState<FormValueType>({
         title: "",
         preparationTime: "",
         instructions: "",
@@ -64,7 +64,7 @@ export default function CreateRecipe() {
     }, []);
 
     // Manage image changement => everytime we add an image in the form
-    const handleImageChange = (e, type, index = 0) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: string, index = 0) => {
         // There is only one file to get each time
         const file = e.target.files?.[0];
         if (!file) return;
@@ -116,13 +116,15 @@ export default function CreateRecipe() {
         }));
       };
 
-    const handleCategoryChange= (event) => {
+    const handleCategoryChange= (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value
         setSelectedCategory(value)
     }
 
     // INGREDIENTS
-    const fetchIngredientSuggestions = async (query) => {
+    // We search ingredient suggestions with the letters the user submit (= the query)
+    // We don't search if the query is less than 2 characters
+    const fetchIngredientSuggestions = async (query: string) => {
         if (query.length < 2) return; 
         try {
             const response = await fetch(`/api/ingredients/search?query=${query}`);
@@ -141,7 +143,7 @@ export default function CreateRecipe() {
     
 
     // Gestion du changement dans le champ de nom d'ingrédient
-    const handleIngredientNameChange = (index, event) => {
+    const handleIngredientNameChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         const newIngredients = [...formValues.ingredients];
         newIngredients[index] = {
@@ -161,7 +163,7 @@ export default function CreateRecipe() {
 
     // Lorsqu'un ingrédient suggéré est cliqué
 // Lorsqu'un ingrédient suggéré est cliqué
-const handleSuggestionClick = (index, suggestion) => {
+const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
     // Vérifier l'objet ingredient avant et après modification
     console.log('Avant mise à jour:', formValues.ingredients[index]);
 
@@ -189,7 +191,7 @@ const handleSuggestionClick = (index, suggestion) => {
 };
 
     // Retrieve data from the form for ingredients
-    const handleIngredientChange = (index, event) => {
+    const handleIngredientChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         const newIngredients = [...formValues.ingredients];
         
@@ -218,7 +220,7 @@ const handleSuggestionClick = (index, suggestion) => {
     };
 
     // remove an ingredient
-    const removeIngredient = (index) => {
+    const removeIngredient = (index: number) => {
         const newIngredients = formValues.ingredients.filter((_, i) => i !== index);
         setFormValues({
             ...formValues,
@@ -228,7 +230,7 @@ const handleSuggestionClick = (index, suggestion) => {
 
     // TOOLS
 
-    const fetchToolSuggestions = async (query) => {
+    const fetchToolSuggestions = async (query: string) => {
         // if the query is shorter than 2 char we don't make the API call
         if (query.length < 2) return;
  
@@ -246,7 +248,7 @@ const handleSuggestionClick = (index, suggestion) => {
             }
     };
     
-    const handleToolSuggestionClick = (index, suggestion) => {
+    const handleToolSuggestionClick = (index: number, suggestion: SuggestionType) => {
     
         // Create a copy of the tools
         const newTools = [...formValues.tools];
@@ -296,7 +298,7 @@ const handleSuggestionClick = (index, suggestion) => {
         
     // };
 
-    const handleToolChange = (index, event) => {
+    const handleToolChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         const newTools = [...formValues.tools];
     
@@ -327,7 +329,7 @@ const handleSuggestionClick = (index, suggestion) => {
         });
     };
 
-    const removeTool = (index) => {
+    const removeTool = (index: number) => {
         const newTools = formValues.tools.filter((_, i) => i !== index);
         setFormValues({
             ...formValues,
@@ -337,7 +339,7 @@ const handleSuggestionClick = (index, suggestion) => {
 
 
     // STEPS
-    const handleStepChange = (index, event) => {
+    const handleStepChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         const newSteps = [...formValues.steps];
         newSteps[index] = {
@@ -357,7 +359,7 @@ const handleSuggestionClick = (index, suggestion) => {
         });
     };
 
-    const removeStep = (index) => {
+    const removeStep = (index: number) => {
         const newSteps = formValues.steps.filter((_, i) => i !== index).map((step, idx) => ({ ...step, number: idx + 1 }));
         setFormValues({
             ...formValues,
@@ -382,16 +384,17 @@ const handleSuggestionClick = (index, suggestion) => {
             // Slugify et put to lower case ingredients and tools
             const ingredients = formValues.ingredients.map((ingredient) => ({
                 ...ingredient,
-                slug: slugify(ingredient.name),
-                name: ingredient.name.toLowerCase(),
+                // functions as slugify() and toLowerCase() ask for a strict string, that's why we use conditions there
+                slug: ingredient.name ? slugify(ingredient.name) : '',
+                name: ingredient.name ? ingredient.name.toLowerCase() : '',
             }));
 
             // console.log("ingredient "+formValues.ingredients)
     
             const tools = formValues.tools.map((tool) => ({
                 ...tool,
-                slug: slugify(tool.label),
-                label: tool.label.toLowerCase(),
+                slug: tool.name ? slugify(tool.name) : '',
+                label: tool.label ? tool.label.toLowerCase() : '',
             }));
 
             tools.forEach(tool => {
@@ -603,10 +606,10 @@ const handleSuggestionClick = (index, suggestion) => {
                     onChange={(event) => handleStepChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <Button label="Remove step" icon={CircleX} type="button" action={() => removeStep(index)} className="text-red-500" />
+                <Button label="Remove step" icon={CircleX} type="button" action={() => removeStep(index)} specifyBackground="text-red-500" />
             </div>
             ))}
-            <Button label="Add step" icon={CirclePlus} type="button" action={() => addStep()} className="text-red-500" />
+            <Button label="Add step" icon={CirclePlus} type="button" action={() => addStep()} specifyBackground="text-red-500" />
             <h2>Ingredients</h2>
             {formValues.ingredients.map((ingredient, index) => (
             <div key={index}>
@@ -624,7 +627,7 @@ const handleSuggestionClick = (index, suggestion) => {
                     {ingredientSuggestions.map((ingredient) => (
                         <li 
                             key={ingredient.id}
-                            onClick={() => handleSuggestionClick(index, ingredient)}  // Ajout du gestionnaire de clic
+                            onClick={() => handleSuggestionClick(index, ingredient)} 
                             className="cursor-pointer text-blue-500 hover:text-blue-700"
                         >
                             {ingredient.label}
@@ -651,10 +654,10 @@ const handleSuggestionClick = (index, suggestion) => {
                     onChange={(event) => handleIngredientChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
-                <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} className="text-red-500" />
+                <Button label="Remove ingredient" icon={CircleX} type="button" action={() => removeIngredient(index)} specifyBackground="text-red-500" />
             </div>
             ))}
-            <Button label="Add ingredient" icon={CirclePlus} type="button" action={() => addIngredient()} className="text-red-500" />
+            <Button label="Add ingredient" icon={CirclePlus} type="button" action={() => addIngredient()} specifyBackground="text-red-500" />
             <h2>Tools</h2>
             {formValues.tools.map((tool, index) => (
             <div key={index}>
@@ -682,10 +685,10 @@ const handleSuggestionClick = (index, suggestion) => {
                     ) : (
                         <p>Aucune suggestion disponible</p>
                     )}
-                <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} className="text-red-500" />
+                <Button label="Remove tool" icon={CircleX} type="button" action={() => removeTool(index)} specifyBackground="text-red-500" />
             </div>
             ))}
-            <Button label="Add tool" icon={CirclePlus} type="button" action={() => addTool()} className="text-red-500" />
+            <Button label="Add tool" icon={CirclePlus} type="button" action={() => addTool()} specifyBackground="text-red-500" />
 
             <Button icon={SendHorizontal} label="Send" specifyBackground="" type="submit" />
         </form>  

@@ -17,7 +17,7 @@ const Recipes = () =>{
         const fetchRecipes = async () => {
           const response = await fetch(`/api/recipes`)
           // On type la constante data. De cette façon, si nous récupérons autre chose que la structure établie au départ, il y aura une erreur
-          const data: RecipeType[] =  await response.json()
+          const data: RecipesWithTotalAndCategories =  await response.json()
           // J'hydrate mon objet article avec les datas récupérés
           setRecipes(data['recipes'])
     

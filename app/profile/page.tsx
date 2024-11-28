@@ -109,7 +109,7 @@ const Profile = () => {
                             difficultyLevel={recipe.difficulty} 
                             additionalButtonComponents={[ 
                                 <LinkButton key="link-button" label="Edit" icon={Pen} path="/recipes/modify/" dynamicPath={recipe.slug} />,
-                                <Button label="Delete recipe" icon={CircleX} type="button" action={() => openDeleteDialog(recipe.id)} className="bg-red-600"/>
+                                <Button label="Delete recipe" icon={CircleX} type="button" action={() => openDeleteDialog(recipe.id)} specifyBackground="bg-red-600"/>
                             ]} 
                         />         
                     ))}  
