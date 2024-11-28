@@ -104,6 +104,49 @@ interface OnlyRecipeType{
     recipe: RecipeType;
 }
 
+interface RecipeTypeWithAll{
+    recipe: RecipeType;
+    suggestions: RecipeType[];
+    favorite?: FavoriteType;
+}
+
+interface RecipesWithTotalAndCategories{
+    success: boolean,
+    recipes: RecipeType[],
+    starters: RecipeType[],
+    mains: RecipeType[],
+    desserts: RecipeType[],
+    totalRecipes : number,
+    totalStarters : number,
+    totalMains : number,
+    totalDesserts : number,
+}
+
+
+// Recipe's creation
+interface FormValueType {
+    title: string;
+    preparationTime: string;
+    instructions: string;
+    isHealthy: string;
+    isVegan: string;
+    difficulty: string;
+    picture: string;
+    // each element of the array can include an image
+    ingredients: { picture?: string, name?: string, slug?: string, quantity?: string, unity?: string }[]; 
+    steps: StepType[];
+    // each element of the array can include an image
+    tools: { picture?: string, name?: string, label?: string, slug?: string }[]; 
+    // Array of files
+    images: { file: File; type: string; index: number }[]; 
+}
+
+// For the suggestions concerning ingredients and tools (for example during recipe's creation)
+interface SuggestionType{
+    label: string;
+    slug?: string;
+}
+
 interface ArticleWithTagsAndComments{
     id: string;
     title: string;
@@ -132,6 +175,11 @@ interface ArticleType{
     slug: string;
     createdAt: Date;
     tags: TagArticleType[];
+}
+
+interface ArticlesTypeWithTotal{
+    articles: ArticleWithTagsAndComments[];
+    totalArticles?: number;
 }
 
 interface TagArticleType{
