@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
     const data = await req.json();
     const { title, instructions, preparationTime, isHealthy, isVegan, picture, createdAt, difficulty, slug, categoryTitle, ingredients,  clerkUserId, email, pseudo, steps, tools } = data;
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
     try {
         let dbUser = await db.user.findUnique({
@@ -56,21 +57,24 @@ export async function POST(req: NextRequest) {
 
         const ingredientEntries = await Promise.all(
             ingredients.map(async (ingredient: IngredientType) => {
+                if (!ingredient.label) {
+                    throw new Error("Ingredient label is missing."+ingredient.slug+"label "+ingredient.label);
+                }
+        
                 let existingIngredient = await db.ingredient.findUnique({
-                    where: { label: ingredient.label }
+                    where: { label: ingredient.label },
                 });
-
-                // Create ingredient if it doesn't exist
+        
                 if (!existingIngredient) {
                     existingIngredient = await db.ingredient.create({
                         data: {
                             label: String(ingredient.label),
-                            slug: ingredient.slug || "slug-null", 
-                            picture: ingredient.picture || "https://res.cloudinary.com/dsq38bxum/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg",
+                            slug: ingredient.slug || "slug-default",
+                            picture: ingredient.picture || `https://res.cloudinary.com/${cloudName}/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg`,
                         },
                     });
                 }
-                
+        
                 return {
                     ingredientId: existingIngredient.id,
                     unit: String(ingredient.unit),
@@ -78,13 +82,14 @@ export async function POST(req: NextRequest) {
                 };
             })
         );
+        
 
         // create compositions after creating ingredients
         const compositionPromises = ingredientEntries.map(async (entry) => {
             await db.composition.create({
                 data: {
                     unit: entry.unit,
-                    quantity: entry.quantity,
+                    quantity: parseInt(entry.quantity),
                     recipeId: recipe.id,
                     ingredientId: entry.ingredientId,
                 },
@@ -102,7 +107,7 @@ export async function POST(req: NextRequest) {
                     data: {
                         label: String(tool.label),
                         slug: tool.slug || 'slug-pas-unique',
-                        picture: tool.picture || "https://res.cloudinary.com/dsq38bxum/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg",
+                        picture: tool.picture || `https://res.cloudinary.com/${cloudName}/image/upload/v1732096009/food-court-4587749_640_yjfuop.jpg`,
                     },
                 });
             }
