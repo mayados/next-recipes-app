@@ -148,7 +148,7 @@ export default function CreateRecipe() {
         const newIngredients = [...formValues.ingredients];
         newIngredients[index] = {
             ...newIngredients[index],
-            name: value,
+            label: value,
             slug: slugify(value),
         };
 
@@ -173,7 +173,7 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
     // Mise à jour de l'ingrédient à l'index spécifique
     newIngredients[index] = {
         ...newIngredients[index],
-        name: suggestion.label, 
+        label: suggestion.label, 
         slug: suggestion.slug,   
     };
 
@@ -215,7 +215,7 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
     const addIngredient = () => {
         setFormValues({
             ...formValues,
-            ingredients: [...formValues.ingredients, { name: "", quantity: "", unity: "", slug: "" , picture:""}],
+            ingredients: [...formValues.ingredients, { label: "", quantity: "", unity: "", slug: "" , picture:""}],
         });
     };
 
@@ -385,8 +385,8 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
             const ingredients = formValues.ingredients.map((ingredient) => ({
                 ...ingredient,
                 // functions as slugify() and toLowerCase() ask for a strict string, that's why we use conditions there
-                slug: ingredient.name ? slugify(ingredient.name) : '',
-                name: ingredient.name ? ingredient.name.toLowerCase() : '',
+                slug: ingredient.label ? slugify(ingredient.label) : '',
+                name: ingredient.label ? ingredient.label.toLowerCase() : '',
             }));
 
             // console.log("ingredient "+formValues.ingredients)
@@ -449,18 +449,10 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
                     };
                   }
             });
-    
-            // console.log('Recieved recipe picture:', formValues.picture);
-            // console.log('Recieved ingredients pictures:', ingredients.map(i => i.picture));
-            // console.log('Recieved tools pictures:', tools.map(t => t.picture));
-            // console.log("ISVEGAN "+formValues.isVegan)
+
 
             // Recipe's creation
             const slug = slugify(formValues.title);
-            formValues.steps.forEach(step => {
-                console.log("Un des steps qui va aller en bdd : "+step.text)
-            });
-            console.log("slug de la recipe "+slug)
             const response = await fetch(`/api/recipes/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -474,13 +466,13 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
                     picture: updatedFormValues.picture,
                     slug: slug,
                     createdAt: new Date().toISOString(),
-                    ingredients:  updatedFormValues.ingredients, 
+                    ingredients:  formValues.ingredients, 
                     email: primaryEmailAddress?.emailAddress,
                     pseudo: username,
                     clerkUserId: id,
                     categoryTitle: selectedCategory,
                     steps: formValues.steps,
-                    tools:  updatedFormValues.tools,  
+                    tools:  formValues.tools,  
                 }),
             });
     
@@ -617,7 +609,7 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
                     type="text"
                     name="name"
                     placeholder="Ingredient name"
-                    value={ingredient.name}
+                    value={ingredient.label}
                     onChange={(event) => handleIngredientNameChange(index, event)}
                     className="w-full h-[2rem] rounded-md bg-gray-700 text-white pl-3 mb-2"
                 />
