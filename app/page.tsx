@@ -1,7 +1,6 @@
 "use client";
 
 import RecipeCard from "@/components/RecipeCard";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
@@ -10,24 +9,36 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './swiper.css';
 // import required modules
-import { Navigation, Pagination, Mousewheel, Keyboard, EffectCoverflow } from 'swiper/modules';
+import { Navigation, EffectCoverflow } from 'swiper/modules';
 
 export default function Home() {
 
   const [recipes, setRecipes] = useState<RecipeType[]>([])
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      const response = await fetch('/api/recipes/latest')
-      // On type la constante data. De cette façon, si nous récupérons autre chose que la structure établie au départ, il y aura une erreur
-      const data: RecipeType[] =  await response.json()
-      // J'hydrate mon objet article avec les datas récupérés
-      setRecipes(data)
+      try {
+        const response = await fetch('/api/recipes/latest')
+        // On type la constante data. De cette façon, si nous récupérons autre chose que la structure établie au départ, il y aura une erreur
+        const data: RecipeType[] =  await response.json()
+        // J'hydrate mon objet article avec les datas récupérés
+        setRecipes(data)
+      } catch (error) {
+        console.error("Error fetching recipes", error);
+      } finally {
+      // stop the loading when the informations are retrieved
+      setLoading(false); 
+  }
     }
+
 
     fetchRecipes()
   },[])
  
+  if (loading) return <p>Loading profile...</p>;
+
 
   return (
     <>
