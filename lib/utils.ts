@@ -1,13 +1,15 @@
 // Function to format the date
 // package to install : "date-fns" avec npm
 import { format } from "date-fns";
+import { ActiveSessionResource } from '@clerk/types';
+// import { Session } from "@clerk/clerk-sdk-node";
 
 export function formatDate(date: Date): string{
     return format(new Date(date), "MMMM do, yyyy HH:mm") ?? "Date not available";
 }
 
 // Determine the user's role from the session data
-export function checkUserRole(session) {
+export function checkUserRole(session: ActiveSessionResource | null | undefined): string | null {
     if (
       !session ||
       !session.user ||
