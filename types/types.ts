@@ -133,7 +133,7 @@ interface FormValueType {
     difficulty: string;
     picture: string;
     // each element of the array can include an image
-    ingredients: { picture?: string, name?: string, slug?: string, quantity?: string, unity?: string }[]; 
+    ingredients: { picture?: string, label?: string, slug?: string, quantity?: string, unity?: string }[]; 
     steps: StepType[];
     // each element of the array can include an image
     tools: { picture?: string, name?: string, label?: string, slug?: string }[]; 
