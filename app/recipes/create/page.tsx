@@ -496,7 +496,7 @@ const handleSuggestionClick = (index: number, suggestion: SuggestionType) => {
     <>
       <h1 className="text-3xl text-white ml-3 text-center">Create a recipe</h1>
       <div><Toaster/></div>
-      <form onSubmit={addRecipe} className="flex flex-col gap-5 border-2 border-pink-600 mx-[20vh] mt-5 px-5 py-3 rounded-md">
+      <form onSubmit={addRecipe} className="flex flex-col gap-5 border-2 border-pink-600 lg:mx-[20vh] mt-5 px-5 py-3 rounded-md">
             <div>
                 <label htmlFor="">Title</label>
                 <Field className="w-full">

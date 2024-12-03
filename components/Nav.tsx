@@ -62,7 +62,7 @@ const Nav:React.FC<NavProps> = ({ logo}) => {
     </button>
 
     {/* Navigation links */}
-    <ul className={`text-white gap-3 ${isOpen ? 'flex flex-col justify-evenly items-center absolute top-[8vh] h-[92vh] bg-green-700 z-10 w-screen' : 'hidden'}  lg:flex`}>
+    <ul className={`text-white gap-3 ${isOpen ? 'flex flex-col justify-evenly items-center absolute top-[8vh] h-[92vh] bg-slate-800 z-10 w-screen' : 'hidden'}  lg:flex`}>
       <SignedOut>
         <li><Link className={`lg:hover:text-pink-600 ${isOpen ? 'hover:none' : 'hover:text-pink-600'}`} href={`/recipes`}>Recipes</Link></li>                    
         <li><Link className='lg:hover:text-pink-600' href={`/search`}>Search</Link></li>                    
