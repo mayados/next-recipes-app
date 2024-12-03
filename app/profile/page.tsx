@@ -16,9 +16,9 @@ const Profile = () => {
     const user = useAuthUser() as { id: string } | null; 
     const [recipes, setRecipes] = useState<RecipeType[]>([]);
     const [favorites, setFavorites] = useState<RecipeType[]>([]);
-    const [comments, setComments] = useState<[]>([]);
+    const [comments] = useState<[]>([]);
     const [loading, setLoading] = useState(true);
-    let [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState<string | null>(null); 
 
 

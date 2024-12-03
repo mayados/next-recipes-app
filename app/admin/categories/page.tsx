@@ -13,7 +13,7 @@ const Categories = () =>{
 
     const [categories, setCategories] = useState<CategoryType[]>([])
     const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null); 
-    let [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [newCategory, setnewCategory] = useState({
         title: "",
         slug: "",
