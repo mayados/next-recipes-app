@@ -7,11 +7,6 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
     const { recipeSlug } = params;
     const { userId } = getAuth(req)
 
-    // if (!userId) {
-    //     // 401 : missing or invalid authentication : the user has the permissions
-    //     return new NextResponse("User not authenticated", { status: 401 });
-    // }
-
 
     try{
 
