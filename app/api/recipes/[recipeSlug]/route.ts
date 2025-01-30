@@ -7,10 +7,10 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
     const { recipeSlug } = params;
     const { userId } = getAuth(req)
 
-    if (!userId) {
-        // 401 : missing or invalid authentication : the user has the permissions
-        return new NextResponse("User not authenticated", { status: 401 });
-    }
+    // if (!userId) {
+    //     // 401 : missing or invalid authentication : the user has the permissions
+    //     return new NextResponse("User not authenticated", { status: 401 });
+    // }
 
 
     try{
@@ -59,12 +59,28 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
             take: 3,
         })
 
-                // We search if the user already exists in the database (beacause we use Clerk to manage users, but we have a local table User in the database)
-                let dbUser = await db.user.findUnique({
-                    where: { 
-                        clerkUserId: userId,
-                    },
-                  });
+        let favorite = null; // Déclaration de favorite en dehors du bloc if
+
+        if (userId) {
+            // On recherche l'utilisateur en base
+            const dbUser = await db.user.findUnique({
+                where: { clerkUserId: userId },
+            });
+
+            console.log("L'id de l'utilisateur : " + dbUser?.id);
+
+            if (dbUser) { // Vérifier que l'utilisateur existe
+                favorite = await db.favorite.findFirst({
+                    where: {
+                        AND: [
+                            { userId: { equals: dbUser.id } },
+                            { recipeId: { equals: recipe?.id } },
+                        ],
+                    }
+                });
+            }
+        }
+
               
                 //   If the user doesn't exist in the database, we create him (because the authentication is made with clerk ,and we have to be sure to link a user of the database to the current user)
                 //   if (!dbUser) {
@@ -79,21 +95,7 @@ export async function GET(req: NextRequest, {params}: {params: {recipeSlug: stri
                 //   }
 
 
-        console.log("L'id de l'utilisateur"+dbUser?.id)
-        // console.log("L'id de la recette"+recipe.id)
-        const favorite = await db.favorite.findFirst({
-            // Multiple conditions, because we want te recipeId and userId to match
-            where: {
-                AND: [
-                    {
-                      userId: {
-                        equals: dbUser?.id,
-                      },
-                    },
-                    { recipeId: { equals: recipe?.id } },
-                  ],
-            }
-        })
+
 
         return NextResponse.json({
             success: true,

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, FormEvent } from "react";
-import { Clock9, Key, ShoppingBasket } from 'lucide-react';
+import { Clock9 } from 'lucide-react';
 import { Gauge } from 'lucide-react';
 import CategoryTag from "@/components/CategoryTag";
 import CommentForm from "@/components/CommentForm";
@@ -10,7 +10,7 @@ import Button from "@/components/Button";
 import Step from "@/components/Step";
 import { Download } from 'lucide-react';
 import { Heart } from 'lucide-react';
-import {CldImage} from "next-cloudinary";
+// import {CldImage} from "next-cloudinary";
 import Title from "@/components/Title";
 import { ListChecks } from 'lucide-react';
 import { CookingPot } from 'lucide-react';
@@ -47,28 +47,38 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     const [suggestions, setSuggestions] = useState<RecipeType[] | null>(null)
     // To manage the state between the recipe and user's favorites
     const [isFavorite, setIsFavorite] = useState<FavoriteType | null>(null)
+    const [loading, setLoading] = useState(true);
 
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+    // const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const {user} = useUser()
 
     useEffect(() => {
         // We want to know if the recipe is part of the user's favorite recipes
         const fetchRecipe = async () => {
-            // Back quotes because dynamical parameter
-            const response = await fetch(`/api/recipes/${params.recipeSlug}`)
-            const data: RecipeTypeWithAll = await response.json()
-            // Hydrating the recipe with retrieved datas
-            setRecipe(data['recipe'])
-            // We set ingredients and tools
-            setIngredients(data['recipe'].compositions)
-            setTools(data['recipe'].recipetools)
-            setSteps(data['recipe'].steps)
-            setComments(data['recipe'].comment)
-            setSuggestions(data['suggestions'])
-            const favoriteData = data.favorite
-            if(favoriteData){
-                setIsFavorite(favoriteData)                
-            }
+            try {
+                    // Back quotes because dynamical parameter
+                    const response = await fetch(`/api/recipes/${params.recipeSlug}`)
+                    const data: RecipeTypeWithAll = await response.json()
+                    // Hydrating the recipe with retrieved datas
+                    setRecipe(data['recipe'])
+                    // We set ingredients and tools
+                    setIngredients(data['recipe'].compositions)
+                    setTools(data['recipe'].recipetools)
+                    setSteps(data['recipe'].steps)
+                    setComments(data['recipe'].comment)
+                    setSuggestions(data['suggestions'])
+                    const favoriteData = data.favorite
+                    if(favoriteData){
+                        setIsFavorite(favoriteData)                
+                    }
+              } catch (error) {
+                console.error("Error fetching the recipe", error);
+              } finally {
+              // stop the loading when the informations are retrieved
+              setLoading(false); 
+          }
+ 
         }
         // We call the function
         fetchRecipe()
@@ -76,6 +86,9 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
     }, [params.recipeSlug])
 
  
+    if (loading) return <p>Loading recipe details...</p>;
+
+
     const addRecipeToFavorites = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         if(!user) return;
@@ -358,7 +371,7 @@ const Recipe = ({params}: {params: {recipeSlug: string}}) => {
                         <TabPanel className="flex flex-wrap gap-3 px-2">
                             {
                             recipetools.map((tools) => (
-                                <div className="mt-4 flex flex-col items-center text-center">
+                                <div key={tools.tool?.id} className="mt-4 flex flex-col items-center text-center">
                                     <Image
                                         className="h-[100px] w-[100px] object-cover"
                                         src={`${tools?.tool?.picture}`}
