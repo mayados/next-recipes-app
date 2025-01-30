@@ -37,7 +37,7 @@ export default function Home() {
     fetchRecipes()
   },[])
  
-  if (loading) return <p>Loading profile...</p>;
+  if (loading) return <p>Loading recipes...</p>;
 
 
   return (
