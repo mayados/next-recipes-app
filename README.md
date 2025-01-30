@@ -5,7 +5,8 @@ Is an application of recipes where you can also find a blog part with articles.
 This is an exrcice made during my training, allowing me to learn and use NextJs, TypeScript, React, MongoDb.
 
 
-
+# Link :
+https://next-recipes-app-brown.vercel.app/recipes
 
 
 
